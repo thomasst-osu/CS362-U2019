@@ -130,6 +130,11 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state);
 
 
 // --------START OF REFACTOR CODE------------
+// HELPER FUNCTIONS
+void discardAll(int handPos, int player, struct gameState *state);
+void drawNumCards(int player, int numCards, struct gameState *state);
+
+// CARD FUNCTIONS
 int playBaronCard(int choice1, int currentPlayer, struct gameState *state);
 /* Refactor of baron cardEffect code */
 
