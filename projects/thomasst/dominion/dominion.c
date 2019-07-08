@@ -1237,7 +1237,7 @@ int updateCoins(int player, struct gameState *state, int bonus)
 // HELPER FUNCTIONS
 void discardAll(int handPos, int player, struct gameState *state){
   while (state->handCount[player] > 0){
-    discardCard(handPos, i, state, 0);
+    discardCard(handPos, player, state, 0);
   }
 }
 
