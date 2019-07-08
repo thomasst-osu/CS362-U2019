@@ -133,5 +133,18 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state);
 int playBaronCard(int choice1, int currentPlayer, struct gameState *state);
 /* Refactor of baron cardEffect code */
 
+int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state);
+/* Refactor of minion code */
+
+
+int playAmbassadorCard();
+/* Refactor of ambassador code */
+
+int playTributeCard();
+/* Refactor of tribute card */
+
+int playMineCard();
+/* Refactor of mine code */
+
 
 #endif

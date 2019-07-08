@@ -915,6 +915,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case minion:
+      return playMinionCard(choice1, choice2, currentPlayer, handPos, state);
+    /*
       //+1 action
       state->numActions++;
 
@@ -964,7 +966,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
 	}
       return 0;
-
+      */
     case steward:
       if (choice1 == 1)
 	{
@@ -1382,6 +1384,45 @@ int playBaronCard(int choice1, int currentPlayer, struct gameState *state){
   	    isGameOver(state);
   	  }
   	}
+  }
+
+  return 0;
+}
+
+int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
+  state->numActions++;    // Add 1 action
+  discardCard(handPos, currentPlayer, state, 0);
+
+  if (choice1){   // +2 coins
+    state->coins = state->coins + 2;
+  }
+  else if (choice2){    // discard hand, redraw 4, other players with 5+ cards must discard hand and draw 4 cards
+    // Discard hand
+    while (numHandCards(state) > 0){
+      discardCard(handPos, currentPlayer, state, 0);
+    }
+
+    // Draw 4 cards
+    for (int i = 0; i < 4; i++){
+      drawCard(currentPlayer, state);
+    }
+
+    // Other players with 5 cards discard hand
+    for (int i = 0; i < state->numPlayers; i++){
+      if (i != currentPlayer){
+        if (state->handCount[i] > 4){
+
+          while (state->handCount[i] > 0){
+            discardCard(handPos, i, state, 0);
+          }
+
+          for (int j = 0; j < 4; j++){
+            drawCard(i, state);
+          }
+        }
+      }
+    }
+
   }
 
   return 0;
