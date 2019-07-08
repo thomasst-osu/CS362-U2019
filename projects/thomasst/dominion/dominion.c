@@ -769,7 +769,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
     case mine:
       return playMineCard(choice1, choice2, currentPlayer, handPos, state);
-  
+
     case remodel:
       j = state->hand[currentPlayer][choice1];  //store card we will trash
 
@@ -1124,7 +1124,9 @@ int playBaronCard(int choice1, int currentPlayer, struct gameState *state){
 
         state->hand[currentPlayer][state->handCount[currentPlayer]] = -1;
         state->handCount[currentPlayer]--;
-        card_not_discarded = 0;   // exit loop
+
+        // BUG 1
+        card_not_discarded++;   // exit loop
       }
       else if (p > state->handCount[currentPlayer]){
         if(DEBUG) {
@@ -1148,7 +1150,7 @@ int playBaronCard(int choice1, int currentPlayer, struct gameState *state){
     }
   }
   else {
-    if (supplyCount(estate, state) > 0){
+    if (supplyCount(estate, state) >= 0){   // BUG #2
   	  gainCard(estate, state, 0, currentPlayer);//Gain an estate
   	  state->supplyCount[estate]--;//Decrement Estates
   	  if (supplyCount(estate, state) == 0){
@@ -1163,7 +1165,8 @@ int playBaronCard(int choice1, int currentPlayer, struct gameState *state){
 
 int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
   state->numActions++;    // Add 1 action
-  discardCard(handPos, currentPlayer, state, 0);
+  // BUG #1
+  //discardCard(handPos, currentPlayer, state, 0);
 
   if (choice1){   // +2 coins
     state->coins = state->coins + 2;
@@ -1179,7 +1182,7 @@ int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, str
     for (int i = 0; i < state->numPlayers; i++){
       if (i != currentPlayer){
         if (state->handCount[i] > 4){
-          discardAll(handPos, i, state);
+          discardAll(handPos, currentPlayer, state);  // BUG #2
           drawNumCards(i, 4, state);
         }
       }
@@ -1207,7 +1210,8 @@ int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos,
     }
   }
 
-  if (j < choice2){   // validate that player has the number of cards they indicated to discard
+  // BUG #1
+  if (j <= choice2){   // validate that player has the number of cards they indicated to discard
     return -1;
   }
 
@@ -1216,7 +1220,7 @@ int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos,
   }
 
   // increase supply count for chosen card by amount being discarded
-  state->supplyCount[state->hand[currentPlayer][choice1]] += choice2;
+  state->supplyCount[state->hand[currentPlayer][choice2]] += choice2; // BUG #2
 
   // each other player gains a copy of the revealed card
   for (int i = 0; i < state->numPlayers; i++){
@@ -1251,7 +1255,7 @@ int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[
     }
     else if (state->discardCount[nextPlayer] > 0){    //next player has 1 card in discard pile
       tributeRevealedCards[0] = state->discard[nextPlayer][state->discardCount[nextPlayer] - 1];
-      state->discardCount[nextPlayer]--;
+      state->discardCount[nextPlayer]++;    // BUG #1
     }
     else {    // next player has no cards to reveal
       if (DEBUG){
@@ -1262,7 +1266,7 @@ int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[
 
   else {      // next player has more than one card to reveal
     if (state->deckCount[nextPlayer] == 0){
-      for (int i = 0; i < state->discardCount[nextPlayer]; i++){
+      for (int i = 0; i <= state->discardCount[nextPlayer]; i++){   // BUG #2
         state->deck[nextPlayer][i] = state->discard[nextPlayer][i];   // move to deck
         state->deckCount[nextPlayer]++;
         state->discard[nextPlayer][i] = -1;
@@ -1304,7 +1308,8 @@ int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[
 }
 
 int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
-  int j = state->hand[currentPlayer][choice1];    // store card to be trashed later
+  //BUG #1
+  int j = state->hand[currentPlayer][choice2];    // store card to be trashed later
 
   if (state->hand[currentPlayer][choice1] < copper || state->hand[currentPlayer][choice1] > gold){    // treasure validation
     return -1;
@@ -1327,7 +1332,7 @@ int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struc
   for (int i = 0; i < state->handCount[currentPlayer]; i++){
     if (state->hand[currentPlayer][i] == j){
       discardCard(i, currentPlayer, state, 0);
-      break;
+      //break;    //BUG #2
     }
   }
 
