@@ -950,6 +950,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 
     case ambassador:
+      return playAmbassadorCard(choice1, choice2, currentPlayer, handPos, state);
+/*
       j = 0;		//used to check if player has enough cards to discard
 
       if (choice2 > 2 || choice2 < 0)
@@ -1006,7 +1008,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 	}
 
       return 0;
-
+*/
     case cutpurse:
 
       updateCoins(currentPlayer, state, 2);
@@ -1328,6 +1330,57 @@ int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, str
       }
     }
 
+  }
+
+  return 0;
+}
+
+int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
+  int j = 0;    // validation integer to verify player has enough cards to discard
+
+  if (choice2 > 2 || choice2 < 0){
+    return -1;
+  }
+
+  if (choice1 == handPos){
+    return -1;
+  }
+
+  for (int i = 0; i < state->handCount[currentPlayer]; i++){
+    if ( i != handPos && i == state->hand[currentPlayer][choice1] && i != choice1){
+      j++;
+    }
+  }
+
+  if (j < choice2){   // validate that player has the number of cards they indicated to discard
+    return -1;
+  }
+
+  if (DEBUG){
+    printf("Player %d reveals card number: %d\n", currentPlayer, state->hand[currentPlayer][choice1]);
+  }
+
+  // increase supply count for chosen card by amount being discarded
+  state->supplyCount[state->hand[currentPlayer][choice1]] += choice2;
+
+  // each other player gains a copy of the revealed card
+  for (int i = 0; i < state->numPlayers; i++){
+    if (i != currentPlayer){
+      gainCard(state->hand[currentPlayer][choice1], state, 0, i);
+    }
+  }
+
+  // discard played card from hand
+  discardCard(handPos, currentPlayer, state, 0);
+
+  // trash copies of cards returned to supply
+  for (j = 0; j < choice2; j++){
+    for (int i = 0; i < state->handCount[currentPlayer]; i++){
+      if (state->hand[currentPlayer][i] == state->hand[currentPlayer][choice1]){
+        discardCard(i, currentPlayer, state, 1);
+        break;
+      }
+    }
   }
 
   return 0;
