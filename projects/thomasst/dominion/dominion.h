@@ -147,7 +147,7 @@ int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos,
 int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[2], struct gameState *state);
 /* Refactor of tribute card */
 
-int playMineCard();
+int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state);
 /* Refactor of mine code */
 
 

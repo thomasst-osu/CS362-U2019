@@ -768,6 +768,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return -1;
 
     case mine:
+
+    /*
       j = state->hand[currentPlayer][choice1];  //store card we will trash
 
       if (state->hand[currentPlayer][choice1] < copper || state->hand[currentPlayer][choice1] > gold)
@@ -801,7 +803,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 	}
 
       return 0;
-
+*/
     case remodel:
       j = state->hand[currentPlayer][choice1];  //store card we will trash
 
@@ -1329,6 +1331,37 @@ int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[
     }
     else {  // action card
       state->numActions = state->numActions + 2;
+    }
+  }
+
+  return 0;
+}
+
+int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
+  int j = state->hand[currentPlayer][choice1];    // store card to be trashed later
+
+  if (state->hand[currentPlayer][choice1] < copper || state->hand[currentPlayer][choice1] > gold){    // treasure validation
+    return -1;
+  }
+
+  if (choice2 > treasure_map || choice2 < curse){   // requested treasure validation
+    return -1;
+  }
+
+  if ((getCost(state->hand[currentPlayer][choice1]) + 3) > getCost(choice2)){   // ensure cost of requested item is allowed
+    return -1;
+  }
+
+  gainCard(choice2, state, 2, currentPlayer);
+
+  // discard current card from hand
+  discardCard(handPos, currentPlayer, state, 0);
+
+  // Discard trashed card
+  for (int i = 0; i < state->handCount[currentPlayer]; i++){
+    if (state->hand[currentPlayer][i] == j){
+      discardCard(i, currentPlayer, state, 0);
+      break;
     }
   }
 
