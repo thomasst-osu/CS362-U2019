@@ -85,7 +85,7 @@ int initializeGame(int numPlayers, int kingdomCards[10], int randomSeed,
 		   struct gameState *state);
 /* Responsible for initializing all supplies, and shuffling deck and
    drawing starting hands for all players.  Check that 10 cards selected
-   are in fact (different) kingdom cards, and that numPlayers is valid. 
+   are in fact (different) kingdom cards, and that numPlayers is valid.
 
 Cards not in game should initialize supply position to -1 */
 
@@ -127,5 +127,28 @@ int scoreFor(int player, struct gameState *state);
 int getWinners(int players[MAX_PLAYERS], struct gameState *state);
 /* Set array position of each player who won (remember ties!) to
    1, others to 0 */
+
+
+// --------START OF REFACTOR CODE------------
+// HELPER FUNCTIONS
+void discardAll(int handPos, int player, struct gameState *state);
+void drawNumCards(int player, int numCards, struct gameState *state);
+
+// CARD FUNCTIONS
+int playBaronCard(int choice1, int currentPlayer, struct gameState *state);
+/* Refactor of baron cardEffect code */
+
+int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state);
+/* Refactor of minion code */
+
+int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state);
+/* Refactor of ambassador code */
+
+int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[2], struct gameState *state);
+/* Refactor of tribute card */
+
+int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state);
+/* Refactor of mine code */
+
 
 #endif
