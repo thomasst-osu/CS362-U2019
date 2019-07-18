@@ -24,16 +24,51 @@ testAll: dominion.o testSuite.c
 interface.o: interface.h interface.c
 	gcc -c interface.c -g  $(CFLAGS)
 
-runtests: testDrawCard 
+runtests: testDrawCard
 	./testDrawCard &> unittestresult.out
 	gcov dominion.c >> unittestresult.out
 	cat dominion.c.gcov >> unittestresult.out
 
-
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
 
-all: playdom player 
+# ADD UNIT TESTING HERE
+# Rule Name:  unittestresults
+# Dependencies:  all unit test source files and dominion code
+# Output file:  unittestresults.out
+# Description:  Generate and execute all unit tests, append test results \
+								to the output file, and include % coverage using the gcov \
+								branch option.
+unitTest1: unittest1.c unittest1.h dominion.o rngs.o
+	gcc -o unittest1 -g unittest1.c dominion.o rngs.o $(CFLAGS)
+
+unitTest2: unittest2.c unittest2.h dominion.o rngs.o
+	gcc -o unittest2 -g unittest2.c dominion.o rngs.o $(CFLAGS)
+
+unitTest3: unittest3.c unittest3.h dominion.o rngs.o
+	gcc -o unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
+
+unitTest4: unittest4.c unittest4.h dominion.o rngs.o
+	gcc -o unittest4 -g unittest4.c dominion.o rngs.o $(CFLAGS)
+
+unitTest5: unittest5.c unittest5.h dominion.o rngs.o
+	gcc -o unittest5 -g unittest5.c dominion.o rngs.o $(CFLAGS)
+
+runUnitTests: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5
+	./unittest1 >> unittestresults.out
+	#gcov dominion.c >> unittestresults.out		configure with branch option
+	./unittest2 >> unittestresults.out
+	#gcov dominion.c >> unittestresults.out
+	./unittest3 >> unittestresults.out
+	#gcov dominion.c >> unittestresults.out
+	./unittest4 >> unittestresults.out
+	#gcov dominion.c >> unittestresults.out
+	./unittest5 >> unittestresults.out
+	#gcov dominion.c >> unittestresults.out
+
+all: playdom player
+
+
 
 clean:
-	rm -f *.o playdom.exe playdom player player.exe  *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
+	rm -f *.o playdom.exe playdom player player.exe  unittest1 unittest2 unittest3 unittest4 unittest5 *.gcov *.gcda *.gcno *.so *.out testDrawCard testDrawCard.exe
