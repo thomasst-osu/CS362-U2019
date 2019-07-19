@@ -1194,6 +1194,8 @@ int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, str
 }
 
 int playAmbassadorCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
+  // Choice 1 = card to reveal
+  // Choice 2 = number of copies to discard (allowed 0, 1, or 2)
   int j = 0;    // validation integer to verify player has enough cards to discard
 
   if (choice2 > 2 || choice2 < 0){
