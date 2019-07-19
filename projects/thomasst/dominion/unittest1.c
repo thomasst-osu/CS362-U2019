@@ -39,6 +39,7 @@ int main(){
 
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
+
   /* ******************************* TEST 1 ******************************** */
   // Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.
   printf("Test 1:  Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.\n");
@@ -63,6 +64,9 @@ int main(){
 
   // Verify that the number of coins available hasn't changed
   assertTrue(testState.coins == state.coins, "Coins", testState.coins, state.coins);
+
+  // Verify number of buys increased by 1
+  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
 
 
 
@@ -97,6 +101,9 @@ int main(){
 
   // Verify that the number of coins available hasn't changed
   assertTrue(testState.coins == state.coins, "Coins", testState.coins, state.coins);
+
+  // Verify number of buys increased by 1
+  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
 
 
 
@@ -134,6 +141,10 @@ int main(){
             "Cards in Player's Hand", testState.handCount[thisPlayer],
             state.handCount[thisPlayer] - 1);
 
+  // Verify number of buys increased by 1
+  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
+
+
 
 
   /* ******************************* TEST 4 ******************************** */
@@ -164,6 +175,10 @@ int main(){
 
   // Verify the player's coin count
   assertTrue(testState.coins == state.coins, "Coins", testState.coins, state.coins);
+
+  // Verify number of buys increased by 1
+  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
+  
 
 
   printf("################## %s TESTING COMPLETE ##################\n", TESTCARD);
