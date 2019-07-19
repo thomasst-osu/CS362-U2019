@@ -20,6 +20,7 @@
 2)  If player has an estate, they can discard in exchange for +4 coins
 3)  Player can elect to draw an estate instead of +4 coins and retain
     current estate in hand.
+4)  Player receives an extra buy.
 ********************************************************************/
 
 
@@ -178,7 +179,7 @@ int main(){
 
   // Verify number of buys increased by 1
   assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
-  
+
 
 
   printf("################## %s TESTING COMPLETE ##################\n", TESTCARD);
