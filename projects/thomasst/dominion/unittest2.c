@@ -32,12 +32,12 @@ int main(){
   int thisPlayer = 0;
   int newCards = 0, discarded = 0, extraCoins = 0;    // test variables
 
-  struct gameState G, testG;
+  struct gameState state, testState;
   int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
                 sea_hag, tribute, smithy, council_room};
 
   /* Initialize game state and player cards */
-  initializeGame(numPlayers, k, seed, &G);
+  initializeGame(numPlayers, k, seed, &state);
 
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
