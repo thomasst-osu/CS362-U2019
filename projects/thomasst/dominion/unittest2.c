@@ -49,7 +49,7 @@ int main(){
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-  cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
+  cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
 
   // Verify number of actions increased by 1.
@@ -88,7 +88,7 @@ int main(){
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-  cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
+  cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify number of actions increased by 1.
   assertTrue(testState.numActions == state.numActions + 1, "Action Count",
@@ -147,7 +147,7 @@ int main(){
     }
   }
 
-  cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
+  cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
 
   // Verify number of actions increased by 1.
@@ -205,7 +205,7 @@ int main(){
   // Ensure current player has 0 cards in hand.
   testState.handCount[thisPlayer] = 0;
 
-  cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
+  cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
 
   // Verify number of actions increased by 1.
