@@ -32,13 +32,6 @@ runtests: testDrawCard
 player: player.c interface.o
 	gcc -o player player.c -g  dominion.o rngs.o interface.o $(CFLAGS)
 
-# ADD UNIT TESTING HERE
-# Rule Name:  unittestresults
-# Dependencies:  all unit test source files and dominion code
-# Output file:  unittestresults.out
-# Description:  Generate and execute all unit tests, append test results \
-								to the output file, and include % coverage using the gcov \
-								branch option.
 unitTest1: unittest1.c dominion.o rngs.o
 	gcc -o unittest1 -g unittest1.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
