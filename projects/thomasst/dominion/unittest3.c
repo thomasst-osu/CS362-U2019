@@ -77,7 +77,7 @@ int main(){
     }
   }
 
-  for (int i = 0; i < testState.handCount[thisPlayer][i]; i++){
+  for (int i = 0; i < testState.handCount[thisPlayer]; i++){
     if (testState.hand[thisPlayer][i] == copper){
       testStateCopperCount++;
     }

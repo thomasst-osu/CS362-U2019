@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void assertTrue(int expression, char* testVar, int result, int expected){
+void assertTrue(int expression, char* test, int result, int expected){
   if (expression) {
     printf("Assert Test PASSED\n");
   } else {

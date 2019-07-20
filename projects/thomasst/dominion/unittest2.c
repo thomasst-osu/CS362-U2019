@@ -67,7 +67,7 @@ int main(){
 
   // Verify the other players' hands did not change
   for (int i = 0; i < state.numPlayers; i++){
-    if (i != currentPlayer){
+    if (i != thisPlayer){
       assertTrue(testState.discardCount[i] == state.discardCount[i], "Other Player Discard Count",
                 testState.discardCount[i], state.discardCount[i]);
     }
@@ -155,12 +155,12 @@ int main(){
             testState.numActions, state.numActions + 1);
 
   // Verify player discarded 5 cards
-  assertTrue(testState.discardCount[thisPlayer] == state.discardCount + discarded,
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
             "Discard Count", testState.discardCount[thisPlayer],
-            state.discardCount + discarded);
+            state.discardCount[thisPlayer] + discarded);
 
   // Verify player picked up 4 cards into hand
-  assertTrue(testState.handCount[thisPlayer] = state.handCount[thisPlayer] - discarded + newCards,
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - discarded + newCards,
             "New Cards in Hand", testState.handCount[thisPlayer],
             state.handCount[thisPlayer] - discarded + newCards);
 

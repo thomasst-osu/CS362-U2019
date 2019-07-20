@@ -43,7 +43,7 @@ int main(){
 
   /* ******************************* TEST 1 ******************************** */
   // Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.
-  printf("Test 1:  Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.\n");
+  printf("\nTest 1:  Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.\n");
   choice1 = 0;
 
   // Copy original game state to a test state
@@ -57,7 +57,7 @@ int main(){
 
   // Verify that only one card was gained (to discard pile)
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + 1,
-            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer]);
+            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + 1);
 
   // Verify that the estate supply count has decreased by 1
   assertTrue(testState.supplyCount[estate] == state.supplyCount[estate] - 1,
@@ -73,7 +73,7 @@ int main(){
 
   /* ******************************* TEST 2 ******************************** */
   // Choice 1 = 1.  Player elects to gain +4 coins while NOT having an estate card.
-  printf("Test 2:  Choice 1 = 1.  Player elects to gain +4 coins while NOT having an estate card.\n");
+  printf("\nTest 2:  Choice 1 = 1.  Player elects to gain +4 coins while NOT having an estate card.\n");
   choice1 = 1;
 
   // Copy original game state to a test state
@@ -94,7 +94,7 @@ int main(){
 
   // Verify that only one card was gained (to discard pile)
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + 1,
-            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer]);
+            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + 1);
 
   // Verify that the state supply count has decreased by 1.
   assertTrue(testState.supplyCount[estate] == state.supplyCount[estate] - 1,
@@ -110,7 +110,7 @@ int main(){
 
   /* ******************************* TEST 3 ******************************** */
   // Choice 1 = 1.  Player elects to gain +4 coins while having an estate card.
-  printf("Test 3:  Choice 1 = 1.  Player elects to gain +4 coins while having an estate card.\n");
+  printf("\nTest 3:  Choice 1 = 1.  Player elects to gain +4 coins while having an estate card.\n");
   choice1 = 1;
 
   // Copy original game state to a test state
@@ -135,7 +135,7 @@ int main(){
             "Estate Supply", testState.supplyCount[estate], state.supplyCount[estate]);
 
   // Verify that the player received 4 extra coins.
-  assertTrue(testState.coins == state.coins + 4, "Coins", testState.coins, state.coins);
+  assertTrue(testState.coins == state.coins + 4, "Coins", testState.coins, state.coins + 4);
 
   // Verify that the card count in the player's hand decreased by 1.
   assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - 1,
@@ -150,7 +150,7 @@ int main(){
 
   /* ******************************* TEST 4 ******************************** */
   // Choice 1 = 0.  Player elects to draw an estate card when estate pile is empty.
-  printf("Test 4:  Choice 1 = 0.  Player elects to draw an estate card when estate pile is empty.\n");
+  printf("\nTest 4:  Choice 1 = 0.  Player elects to draw an estate card when estate pile is empty.\n");
   choice1 = 0;
 
   // Copy original game state to a test state

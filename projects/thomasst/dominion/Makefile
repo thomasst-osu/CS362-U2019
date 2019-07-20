@@ -40,30 +40,30 @@ player: player.c interface.o
 								to the output file, and include % coverage using the gcov \
 								branch option.
 unitTest1: unittest1.c dominion.o rngs.o
-	gcc -o unittest1 -g unittest1.c dominion.o rngs.o $(CFLAGS)
+	gcc -o unittest1 -g unittest1.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
 unitTest2: unittest2.c dominion.o rngs.o
-	gcc -o unittest2 -g unittest2.c dominion.o rngs.o $(CFLAGS)
+	gcc -o unittest2 -g unittest2.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
 unitTest3: unittest3.c dominion.o rngs.o
-	gcc -o unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
+	gcc -o unittest3 -g unittest3.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
 unitTest4: unittest4.c dominion.o rngs.o
-	gcc -o unittest4 -g unittest4.c dominion.o rngs.o $(CFLAGS)
+	gcc -o unittest4 -g unittest4.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
 unitTest5: unittest5.c dominion.o rngs.o
-	gcc -o unittest5 -g unittest5.c dominion.o rngs.o $(CFLAGS)
+	gcc -o unittest5 -g unittest5.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
 runUnitTests: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5
 	./unittest1 >> unittestresults.out
-	#gcov dominion.c >> unittestresults.out		configure with branch option
-	./unittest2 >> unittestresults.out
+	gcov -f dominion.c >> unittestresults.out
+	#./unittest2 >> unittestresults.out
 	#gcov dominion.c >> unittestresults.out
-	./unittest3 >> unittestresults.out
+	#./unittest3 >> unittestresults.out
 	#gcov dominion.c >> unittestresults.out
-	./unittest4 >> unittestresults.out
+	#./unittest4 >> unittestresults.out
 	#gcov dominion.c >> unittestresults.out
-	./unittest5 >> unittestresults.out
+	#./unittest5 >> unittestresults.out
 	#gcov dominion.c >> unittestresults.out
 
 all: playdom player
