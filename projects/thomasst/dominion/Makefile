@@ -39,19 +39,19 @@ player: player.c interface.o
 # Description:  Generate and execute all unit tests, append test results \
 								to the output file, and include % coverage using the gcov \
 								branch option.
-unitTest1: unittest1.c unittest1.h dominion.o rngs.o
+unitTest1: unittest1.c dominion.o rngs.o
 	gcc -o unittest1 -g unittest1.c dominion.o rngs.o $(CFLAGS)
 
-unitTest2: unittest2.c unittest2.h dominion.o rngs.o
+unitTest2: unittest2.c dominion.o rngs.o
 	gcc -o unittest2 -g unittest2.c dominion.o rngs.o $(CFLAGS)
 
-unitTest3: unittest3.c unittest3.h dominion.o rngs.o
+unitTest3: unittest3.c dominion.o rngs.o
 	gcc -o unittest3 -g unittest3.c dominion.o rngs.o $(CFLAGS)
 
-unitTest4: unittest4.c unittest4.h dominion.o rngs.o
+unitTest4: unittest4.c dominion.o rngs.o
 	gcc -o unittest4 -g unittest4.c dominion.o rngs.o $(CFLAGS)
 
-unitTest5: unittest5.c unittest5.h dominion.o rngs.o
+unitTest5: unittest5.c dominion.o rngs.o
 	gcc -o unittest5 -g unittest5.c dominion.o rngs.o $(CFLAGS)
 
 runUnitTests: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5
