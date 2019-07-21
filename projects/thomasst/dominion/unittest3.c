@@ -57,10 +57,14 @@ int main(){
 
 
   /* ******************************* TEST 1 ******************************** */
-  // Test 1:  Choice 1 = 1 (copper hand position).  Choice 2 = 0 (0 copies).
-  //    Player reveals a copper, but does not add any to the supply.
-  printf("Test 1:  Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies).  \
-          Player reveal a copper, but does not add any to the supply.\n");
+  /* Action:  Player reveals a copper, but does contribute any to the supply.
+   * Expected Response:  Other player(s) pick up a copper from supply
+   * Variables:  Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies)
+   * State Setup:  -none...setup above-
+   */
+  printf("\nTest 1:  Player reveal a copper, but does not add any to the supply.  Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies).\n");
+
+  /* Scenario setup */
   choice1 = 1;
   choice2 = 0;
 
@@ -101,11 +105,14 @@ int main(){
 
 
   /* ******************************* TEST 2 ******************************** */
-  // Test 2:  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).
-  //    Player reveals a copper and contributes 2 back to the supply pile.
+  /* Action:  Player reveals a copper and contributes 2 back to the supply.
+   * Expected Response:  Other player(s) pick up a copper from supply.
+   * Variables:  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies)
+   * State Setup:  -none-
+   */
+
   // NOTE:  Player has 2 coppers in hand.
-  printf("Test 2:  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).  \
-        Player reveals a copper and contributes 2 back to the supply.\n");
+  printf("\nTest 2:  Player reveals a copper and contributes 2 back to the supply.  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).\n");
   choice1 = 1;
   choice2 = 2;
   discarded = 2;
@@ -134,12 +141,12 @@ int main(){
     }
   }
 
-  assertTrue(testStateCopperCount == stateCopperCount - discarded, "Copper Count",
+  assertTrue(testStateCopperCount == stateCopperCount - discarded, "Player Copper Count",
             testStateCopperCount, stateCopperCount - discarded);
 
   // Verify the player only discarded the played card
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + 1,
-            "Discard Count", testState.discardCount[thisPlayer],
+            "Player Discard Count", testState.discardCount[thisPlayer],
             state.discardCount[thisPlayer] + 1);
 
   // Verify the other players picked up (in discard pile) a copper
@@ -158,20 +165,21 @@ int main(){
 
 
   /* ******************************* TEST 3 ******************************** */
-  // Test 3:  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).
-  //    Player reveals a copper and requests to put 2 in the supply pile, but only
-  //    holds one.
-  printf("Test 3:  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).  \
-        Player reveals a copper and requests to put 2 in the supply pile, but only \
-        holds one.\n");
-  choice1 = 1;
-  choice2 = 2;
+  /* Action:  Player reveals a copper and requests to put 2 in the supply pile
+      while only holding one.
+   * Expected Response:  State remains unchanged.  Action not allowed.
+   * Variables: Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies)
+   * State Setup:  Change player's hand [2 - 4] to silver.  Should leave player
+      with only 1 copper.
+   */
+  printf("\nTest 3:  Player reveals a copper and requests to put 2 in the supply pile, but only holds one.  Choice 1 = 1 (copper hand position), choice 2 = 2 (2 copies).\n");
 
-  /* Modify original game state to ensure correct behavior.  Ambassador in
-    position 0, copper in position 1, silvers in all other positions */
+  /* Scenario setup (ambassador already in position 0, copper in 1)*/
   state.hand[thisPlayer][2] = silver;
   state.hand[thisPlayer][3] = silver;
   state.hand[thisPlayer][4] = silver;
+  choice1 = 1;
+  choice2 = 2;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -181,11 +189,11 @@ int main(){
   assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer],
             "Player Hand Count", testState.handCount[thisPlayer],
             state.handCount[thisPlayer]);
-    // player discard count
+
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer],
-            "Discard Count", testState.discardCount[thisPlayer],
+            "Player Discard Count", testState.discardCount[thisPlayer],
             state.discardCount[thisPlayer]);
-    // other players' discard counts
+
   for (int i = 0; i < state.numPlayers; i++){
     if (i != thisPlayer){
       assertTrue(testState.discardCount[i] == state.discardCount[i],
@@ -193,7 +201,7 @@ int main(){
                 state.discardCount[i]);
     }
   }
-    // copper supply count
+
   assertTrue(testState.supplyCount[copper] == state.supplyCount[copper],
             "Copper Supply", testState.supplyCount[copper],
             state.supplyCount[copper]);
@@ -201,18 +209,18 @@ int main(){
 
 
   /* ******************************* TEST 4 ******************************** */
-  // Test 4: Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies).
-  //    Player reveals a copper, but does not add any to the supply pile.  The
-  //    supply pile is empty.
-  printf("Test 4:  Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies).  \
-        Player reveals a copper, but does not add any to the supply pile.  The  \
-        supply pile is empty.\n");
+  /* Action:  Player reveals a copper, does not add to supply pile, no coppers in supply.
+   * Expected Response:  No state change as other players cannot draw from supply.
+   * Variables: Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies)
+   * State Setup:  Change copper supply to 0
+   */
+  printf("\nTest 4:  Player reveals a copper, but does not add any to the supply pile.  The supply pile is empty.  Choice 1 = 1 (copper hand position), choice 2 = 0 (0 copies).\n");
+
+  /* Scenario setup */
+  state.supplyCount[copper] = 0;
   choice1 = 1;
   choice2 = 0;
   discarded = 1;
-
-  // Make original state copper supply = 0
-  state.supplyCount[copper] = 0;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -242,10 +250,15 @@ int main(){
 
 
   /* ******************************* TEST 5 ******************************** */
-  // Test 5:  Choice 1 = 1 (copper hand position), choice 2 = 1 (1 copy).
-  //    Player reveals a copper, contributes one to an empty supply pile.
-  printf("Test 5:  Choice 1 = 1 (copper hand position), choice 2 = 1 (1 copy).  \
-        Player reveals a copper, contributes one to an empty supply pile.\n");
+  /* Action:  Player reveals copper and contributes 1 to an empty supply pile.
+   * Expected Response:  Only next player in order gets a copy of copper.
+   * Variables: Choice 1 = 1 (copper hand position), choice 2 = 1 (1 copy)
+   * State Setup:  -none, carryover from previous test-
+   * NOTE:  There are 3 players in these unit tests
+   */
+  printf("\nTest 5:  Player reveals a copper, contributes one to an empty supply pile.  Choice 1 = 1 (copper hand position), choice 2 = 1 (1 copy).\n");
+
+  /* Scenario setup */
   choice1 = 1;
   choice2 = 1;
 
