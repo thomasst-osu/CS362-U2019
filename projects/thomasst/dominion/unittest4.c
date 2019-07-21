@@ -51,15 +51,18 @@ int main(){
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
   /* ******************************* TEST 1 ******************************** */
-  // Next player reveals 2 copper cards.  Current player receives 2 bonus coins.
-  printf("\nTest 1:  Next player reveals 2 copper cards on top of his deck.  Current \
-            player receives 2 bonus coins.\n");
-  revealedCards = 2;
-  extraCoins = 2;
+  /* Action:  Next player reveals 2 copper cards.
+   * Expected Response:  Player receives 2 bonus coins.
+   * Variables:  -none-
+   * State Setup:  2 coppers at the top of the next player's deck
+   */
+  printf("\nTest 1:  Next player reveals 2 copper cards on top of his deck.  Current player receives 2 bonus coins.\n");
 
-  // Ensure next player has 2 copper cards on top of their deck.
+  /* Scenario setup */
   state.deck[nextPlayer][state.deckCount[nextPlayer] - 1] = copper;
   state.deck[nextPlayer][state.deckCount[nextPlayer] - 2] = copper;
+  revealedCards = 2;
+  extraCoins = 2;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -88,18 +91,20 @@ int main(){
             testState.numActions, state.numActions);
 
 
+
   /* ******************************* TEST 2 ******************************** */
-  // Next player reveals 1 copper and 1 estate.  Current player receives 2 bonus
-  //    coins and 2 additional cards from deck.
-  printf("\nTest 2:  Next player reveals 1 copper and 1 estate.  Current player \
-            receives 2 bonus coins and 2 additional cards from deck.\n");
+  /* Action:  Next player reveals 1 copper and 1 estate.
+   * Expected Response:  Player receives 2 bonus coins and 2 cards from deck.
+   * Variables:  -none-
+   * State Setup:  Place estate 2nd from top of next player's deck
+   */
+  printf("\nTest 2:  Next player reveals 1 copper and 1 estate.  Current player receives 2 bonus coins and 2 additional cards from deck.\n");
+
+  /* Scenario setup */
+  state.deck[nextPlayer][state.deckCount[nextPlayer] - 2] = estate;
   newCards = 2;
   revealedCards = 2;
   extraCoins = 2;
-
-  // Modify next player's top of deck for scenario (copper already in slot 1)
-  state.deck[nextPlayer][state.deckCount[nextPlayer] - 2] = estate;
-
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -132,15 +137,17 @@ int main(){
 
 
   /* ******************************* TEST 3 ******************************** */
-  // Next player reveals 1 copper and 1 tribute.  Current player receives 2 bonus
-  //    coins and 2 additional actions.
-  printf("\nTest 3:  Next player reveals 1 copper and 1 tribute.  Current player \
-            receives 2 bonus coins and 2 additional actions.\n");
+  /* Action:  Next player reveals 1 copper and 1 tribute.
+   * Expected Response:  Player receives 2 bonus coins and 2 actions
+   * Variables: -none-
+   * State Setup:  Place tribute (action) 2nd from top of next player's deck
+   */
+  printf("\nTest 3:  Next player reveals 1 copper and 1 tribute.  Current player receives 2 bonus coins and 2 additional actions.\n");
+
+  /* Scenario setup */
+  state.deck[nextPlayer][state.deckCount[nextPlayer] - 2] = tribute;
   revealedCards = 2;
   extraCoins = 2;
-
-  // Modify next player's top of deck for scenario (copper already in slot 1)
-  state.deck[nextPlayer][state.deckCount[nextPlayer] - 2] = tribute;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -172,15 +179,18 @@ int main(){
 
 
   /* ******************************* TEST 4 ******************************** */
-  // Next player only has 1 copper to reveal.  Current player receives 2 bonus coins.
-  printf("\nTest 4:  Next player only has 1 copper to reveal.  Current player \
-            receives 2 bonus coins.\n");
-  revealedCards = 1;
-  extraCoins = 2;
+  /* Action:  Next player only has 1 card to reveal (copper).
+   * Expected Response:  Player receives 2 bonus coins.
+   * Variables:  -none-
+   * State Setup:  Change next player's deck count to 1 and place a copper there.
+   */
+  printf("\nTest 4:  Next player only has 1 copper to reveal.  Current player receives 2 bonus coins.\n");
 
-  // Modify next player's top of deck for scenario
+  /* Scenario setup */
   state.deckCount[nextPlayer] = 1;
   state.deck[nextPlayer][state.deckCount[nextPlayer] - 1] = copper;
+  revealedCards = 1;
+  extraCoins = 2;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
@@ -211,14 +221,19 @@ int main(){
 
 
   /* ******************************* TEST 5 ******************************** */
+  /* Action:  Next player has no cards to reveal.
+   * Expected Response:  No change in state
+   * Variables:  -none-
+   * State Setup:  Change next player's deck count to 0.
+   */
   // Next player has no cards to reveal.  Nothing happens.
   printf("\nTest 5:  Next player has no cards to reveal.  Nothing happens.\n");
+
+  /* Scenario setup */
+  state.deckCount[nextPlayer] = 0;    // Discard pile is already 0
   revealedCards = 0;
   extraCoins = 0;
   newCards = 0;
-
-  // Modify next player's deck for scenario
-  state.deckCount[nextPlayer] = 0;    // Discard pile is already 0
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
