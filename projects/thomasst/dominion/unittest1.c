@@ -30,6 +30,7 @@ int main(){
   int seed = 1000;
   int numPlayers = 2;
   int thisPlayer = 0;
+  int discarded = 0, newCards = 0, trashed = 0, addBuys = 0, extraCoins = 0;
 
   struct gameState state, testState;
   int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
@@ -42,8 +43,13 @@ int main(){
 
 
   /* ******************************* TEST 1 ******************************** */
-  // Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.
-  printf("\nTest 1:  Choice 1 = 0.  Player elects to draw an estate card regardless of hand content.\n");
+  /* Action:  Player chooses to draw an estate card
+   * Expected Response:  Player picks up estate card to discard pile, discards baron,
+      and gets an additional buy.
+   * Variables:  Choice 1 = 0.
+   * State Setup:  -none...leave as defined by initializeGame-
+   */
+  printf("\nTest 1:  Player elects to draw an estate card regardless of hand content.  Choice 1 = 0.\n");
   choice1 = 0;
 
   // Copy original game state to a test state
@@ -72,18 +78,25 @@ int main(){
 
 
   /* ******************************* TEST 2 ******************************** */
-  // Choice 1 = 1.  Player elects to gain +4 coins while NOT having an estate card.
-  printf("\nTest 2:  Choice 1 = 1.  Player elects to gain +4 coins while NOT having an estate card.\n");
+  /* Action: Player attempts to gain +4 coins while NOT having an estate card.
+   * Expected Response:  No extra coins, player picks up an estate, discards baron,
+      and gets an additional buy.
+   * Variables:  Choice 1 = 1
+   * State Setup:  Player hand [0 - 4] = copper to ensure no estates in hand.
+   */
+  printf("\nTest 2:  Player elects to gain +4 coins while NOT having an estate card.  Choice 1 = 1.\n");
   choice1 = 1;
+  newCards = 1;
+  discarded = 1;
+  addBuys = 1;
+
+  /* Scenario setup */
+  for (int i = 0; i < state.handCount[thisPlayer]; i++){
+    state.hand[thisPlayer][i] = copper;
+  }
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-
-  // Ensure that the current player does not have any estates in their hand
-  for (int i = 0; i < 10; i++){
-    testState.hand[thisPlayer][i] = copper;
-  }
-
   cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify that an estate card was gained (in discard pile) because the player did not
@@ -93,92 +106,118 @@ int main(){
             estate);
 
   // Verify that only one card was gained (to discard pile)
-  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + 1,
-            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + 1);
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
+            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + discarded);
 
   // Verify that the state supply count has decreased by 1.
-  assertTrue(testState.supplyCount[estate] == state.supplyCount[estate] - 1,
-            "Estate Supply", testState.supplyCount[estate], state.supplyCount[estate] - 1);
+  assertTrue(testState.supplyCount[estate] == state.supplyCount[estate] - newCards,
+            "Estate Supply", testState.supplyCount[estate], state.supplyCount[estate] - newCards);
 
   // Verify that the number of coins available hasn't changed
   assertTrue(testState.coins == state.coins, "Coins", testState.coins, state.coins);
 
   // Verify number of buys increased by 1
-  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
+  assertTrue(testState.numBuys == state.numBuys + addBuys, "Number of Buys", testState.numBuys, state.numBuys + 1);
 
 
 
   /* ******************************* TEST 3 ******************************** */
+  /* Action: Player discards an estate for +4 coins
+   * Expected Response:  Player discards estate, discards baron, receives +4 coins
+      and +1 buy.
+   * Variables:  Choice 1 = 1
+   * State Setup:  Player hand [0] = estate, [1 - 4] = copper
+   */
   // Choice 1 = 1.  Player elects to gain +4 coins while having an estate card.
-  printf("\nTest 3:  Choice 1 = 1.  Player elects to gain +4 coins while having an estate card.\n");
+  printf("\nTest 3:  Player elects to gain +4 coins while having an estate card.  Choice 1 = 1.\n");
+
+  /* Scenario setup */
+  state.hand[thisPlayer][0] = estate;
   choice1 = 1;
+  discarded = 2;
+  newCards = 0;
+  extraCoins = 4;
+  addBuys = 1;
+
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-
-  // Ensure that the player has at least one estate card in their hand.
-  testState.hand[thisPlayer][0] = estate;
-
   cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify that an estate card was discarded.
-  assertTrue(testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1] == estate,
-            "Discarded Estate Card", testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1],
-            estate);
+  int discardedEstate = 0;
+  for (int i = 0; i < testState.discardCount[thisPlayer]; i++){
+    if (testState.discard[thisPlayer][i] == estate){
+      discardedEstate++;
+    }
+  }
+  assertTrue(discardedEstate == 1, "Discarded Estate Card", discardedEstate, 1);
 
-  // Verify that only one card was discarded.
-  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + 1,
-            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + 1);
+  // Verify that the estate and baron card were discarded
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
+            "Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + discarded);
 
   // Verify that the supply count was not modified for estates.
   assertTrue(testState.supplyCount[estate] == state.supplyCount[estate],
             "Estate Supply", testState.supplyCount[estate], state.supplyCount[estate]);
 
   // Verify that the player received 4 extra coins.
-  assertTrue(testState.coins == state.coins + 4, "Coins", testState.coins, state.coins + 4);
+  assertTrue(testState.coins == state.coins + extraCoins, "Coins", testState.coins, state.coins + extraCoins);
 
-  // Verify that the card count in the player's hand decreased by 1.
-  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - 1,
+  // Verify that the card count in the player's hand decreased by 2.
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - discarded,
             "Cards in Player's Hand", testState.handCount[thisPlayer],
-            state.handCount[thisPlayer] - 1);
+            state.handCount[thisPlayer] - discarded);
 
   // Verify number of buys increased by 1
-  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
+  assertTrue(testState.numBuys == state.numBuys + addBuys, "Number of Buys", testState.numBuys, state.numBuys + addBuys);
 
 
 
 
   /* ******************************* TEST 4 ******************************** */
+  /* Action:  Player attempts to draw an estate card when the estate pile is empty.
+   * Expected Response:  Player discards baron, receives extra buy.
+   * Variables:  Choice 1 = 0
+   * State Setup:  Estate supply count = 0
+   */
   // Choice 1 = 0.  Player elects to draw an estate card when estate pile is empty.
-  printf("\nTest 4:  Choice 1 = 0.  Player elects to draw an estate card when estate pile is empty.\n");
+  printf("\nTest 4:  Player elects to draw an estate card when estate pile is empty.  Choice 1 = 0.\n");
+
+  /* Scenario Setup */
+  state.supplyCount[estate] = 0;
   choice1 = 0;
+  newCards = 0;
+  discarded = 1;
+  addBuys = 1;
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-
-  // Ensure that there are no more estates in the supply deck.
-  testState.supplyCount[estate] = 0;
-
   cardEffect(baron, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify that no estate card was gained (into discard pile)
-  assertTrue(testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1] != estate,
-            "Discarded Estate Card", testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1],
-            0);
+  int estateCount = 0;
+  for (int i = 0; i < testState.discardCount[thisPlayer]; i++){
+    if (testState.discard[thisPlayer][i] == estate){
+      estateCount++;
+    }
+  }
+
+  assertTrue(estateCount == newCards, "Discarded Estate Card", estateCount, newCards);
 
   // Verify the estate supply
   assertTrue(testState.supplyCount[estate] == 0, "Estate Supply", testState.supplyCount[estate], 0);
 
   // Verify the player's hand count
-  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer],
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - discarded,
             "Cards in Player's Hand", testState.handCount[thisPlayer],
-            state.handCount[thisPlayer]);
+            state.handCount[thisPlayer] - discarded);
 
   // Verify the player's coin count
   assertTrue(testState.coins == state.coins, "Coins", testState.coins, state.coins);
 
   // Verify number of buys increased by 1
-  assertTrue(testState.numBuys == state.numBuys + 1, "Number of Buys", testState.numBuys, state.numBuys + 1);
+  assertTrue(testState.numBuys == state.numBuys + addBuys, "Number of Buys", testState.numBuys, state.numBuys + addBuys);
 
 
 
