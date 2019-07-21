@@ -85,7 +85,34 @@ int main(){
 
 
 
-  /* ******************************* TEST 3 ******************************** */
+/* ******************************* TEST 3 ******************************** */
+  /* Action:  Try to initialize game with duplicate kingdom cards;
+  * Expected Response:  No state changes.  Duplicate cards not allowed.
+  * Variables:  k2[10] - kingdom cards with one duplicate
+  * Setup:  2 players, kingdom cards with 1 duplicate
+  */
+  printf("\nTest 3:  Try to initialize game with duplicate kingdom cards.\n");
+
+  /* Scenario setup */
+  numPlayers = 2;
+  struct gameState state4;
+  int k2[10] = {adventurer, gardens, village, village, mine, cutpurse,
+                sea_hag, tribute, smithy, council_room};
+
+  initializeGame(numPlayers, k2, seed, &state4);
+
+  // Test number of players in state
+  assertTrue(state4.numPlayers == 0, "State Number of Players",
+    state4.numPlayers, 0);
+
+  // Test supply count of curse cards
+  assertTrue(state4.supplyCount[curse] == 0, "Supply Curse Cards",
+    state4.supplyCount[curse], 0);
+
+
+
+
+  /* ******************************* TEST 4 ******************************** */
   /* Action:  Initialize game with allowable number of players.
    * Expected Response:  Normal state setup.
    * Variables:  numPlayers = 2 - MAX_PLAYERS
@@ -96,7 +123,7 @@ int main(){
   struct gameState state3;
 
   for (int i = 2; i <= MAX_PLAYERS; i++){
-    printf("\nTest 3.%d:  Initialize game with &d players.  Normal state setup.\n", i-1, i);
+    printf("\nTest 4.%d:  Initialize game with %d players.  Normal state setup.\n", i-1, i);
     initializeGame(i, k, seed, &state3);
 
     // Test number of players
@@ -168,40 +195,14 @@ int main(){
         assertTrue(state3.deckCount[j] == 5, "First Player Deck Count",
           state3.deckCount[j], 5);
       } else {
-        assertTrue(state3.handCount[j] == 10, "Other Player Hand Count",
-          state3.handCount[j], 10);
-        assertTrue(state3.handCount[j], 10);
+        assertTrue(state3.handCount[j] == 0, "Other Player Hand Count",
+          state3.handCount[j], 0);
+        assertTrue(state3.deckCount[j] ==  10, "Other Player Deck Count",
+		  state3.deckCount[j], 10);
       }
     }
 
   }
-
-
-  /* ******************************* TEST 4 ******************************** */
-  /* Action:  Try to initialize game with duplicate kingdom cards;
-  * Expected Response:  No state changes.  Duplicate cards not allowed.
-  * Variables:  k2[10] - kingdom cards with one duplicate
-  * Setup:  2 players, kingdom cards with 1 duplicate
-  */
-  printf("\nTest 4:  Try to initialize game with duplicate kingdom cards.\n");
-
-  /* Scenario setup */
-  numPlayers = 2;
-  struct gameState state4;
-  int k2[10] = {adventurer, gardens, village, village, mine, cutpurse,
-                sea_hag, tribute, smithy, council_room};
-
-  initializeGame(i, k2, seed, &state4);
-
-  // Test number of players in state
-  assertTrue(state4.numPlayers == 0, "State Number of Players",
-    state4.numPlayers, 0);
-
-  // Test supply count of curse cards
-  assertTrue(state4.supplyCount[curse] == 0, "Supply Curse Cards",
-    state4.supplyCount[curse], 0);
-
-
 
 
   printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
