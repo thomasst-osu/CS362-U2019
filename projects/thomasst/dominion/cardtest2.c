@@ -28,6 +28,7 @@ int main(){
   /* Intialize testing and game variables */
   int numPlayers = 2;
   int thisPlayer = 0;
+  int nextPlayer = thisPlayer + 1;
   int seed = 1000;
   int k[10] = {adventurer, gardens, village, minion, mine, cutpurse,
                 sea_hag, tribute, smithy, council_room};
@@ -43,32 +44,33 @@ int main(){
    * Variables:  -none-
    * Setup:  Initialize a new 2 player game, force 10 different cards into hand,
       call shuffle.
+	*NOTE:  Using nextPlayer because thisPlayer only has 5 cards in deck vs 10
    */
-  printf("\nTest 1:  Initialize game and shuffle a full deck for player 1.\n");
+  printf("\nTest 1:  Initialize game and shuffle a full deck for player 2.\n");
 
   /* Scenario setup */
-  for (int i = 0; i < state.deckCount[thisPlayer]; i++){
-   state.deck[thisPlayer][i] = i + adventurer;    // load all cards in deck with different card
+  for (int i = 0; i < state.deckCount[nextPlayer]; i++){
+   state.deck[nextPlayer][i] = i + adventurer;    // load all cards in deck with different card
   }
 
   // Make a copy for comparison
   memcpy(&testState, &state, sizeof(struct gameState));
-  int success = shuffle(thisPlayer, &testState);
+  int success = shuffle(nextPlayer, &testState);
 
   int matches = 0;
 
   // Compare decks
-  for (int i = 0; i < testState.deckCount[thisPlayer]; i++){
-   if (testState.deck[thisPlayer][i] == state.deck[thisPlayer][i]){
+  for (int i = 0; i < testState.deckCount[nextPlayer]; i++){
+   if (testState.deck[nextPlayer][i] == state.deck[nextPlayer][i]){
      matches++;
    }
   }
-  if (matches == testState.deckCount[thisPlayer]){
+  if (matches == testState.deckCount[nextPlayer]){
    printf("Assert Test FAILED\n\tAll cards matched original deck after shuffle.\n");
   } else if (matches == 0){
    printf("Assert Test PASSED\n\tNo cards matched original deck after shuffle.\n");
   } else {
-   printf("Assert Test PASSED\n\t%d out of %d cards matched original deck after shuffle.\n", matches, testState.deckCount[thisPlayer]);
+   printf("Assert Test PASSED\n\t%d out of %d cards matched original deck after shuffle.\n", matches, testState.deckCount[nextPlayer]);
   }
 
   // Compare return value
@@ -86,10 +88,11 @@ int main(){
 
   /* Scenario setup */
   state.deckCount[thisPlayer] = 0;
+  success = 0;
 
   /* Make a copy for comparison */
   memcpy(&testState, &state, sizeof(struct gameState));
-  int success = shuffle(thisPlayer, &testState);
+  success = shuffle(thisPlayer, &testState);
 
   /* Ensure deck count remained at 0 */
   assertTrue(testState.deckCount[thisPlayer] == state.deckCount[thisPlayer], "Player Deck Count",
