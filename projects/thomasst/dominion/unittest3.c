@@ -27,10 +27,7 @@
 
 int main(){
   /* Initialize testing and game variables */
-  int newCards = 0;
   int discarded = 0;
-  int extraCoins = 0;
-  int shuffleCards = 0;
 
   int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
   int seed = 1000;
@@ -234,7 +231,7 @@ int main(){
 
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
           "Player Discard Count", testState.discardCount[thisPlayer],
-          state.discardCount[thisPlayer]);
+          state.discardCount[thisPlayer] + discarded);
 
   for (int i = 0; i < state.numPlayers; i++){
     if (i != thisPlayer){
