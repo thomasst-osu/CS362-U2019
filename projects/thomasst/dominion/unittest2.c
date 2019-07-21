@@ -47,7 +47,7 @@ int main(){
    * Variables:  Choice 1 = 1
    * State Setup:  - none -
    */
-  printf("Test 1:  Player chooses to receive +2 coins.  Choice 1 = 1.\n");
+  printf("\nTest 1:  Player chooses to receive +2 coins.  Choice 1 = 1.\n");
 
   /* Scenario setup */
   choice1 = 1;
@@ -88,7 +88,7 @@ int main(){
    * Variables:  Choice 1 = 0, choice 2 = 1
    * State Setup: -none-
    */
-  printf("Test 2:  Player chooses to discard hand and receive 4 cards.  All players start with 5 cards.  Choice 1 = 0, choice 2 = 1.\n");
+  printf("\nTest 2:  Player chooses to discard hand and receive 4 cards.  All players start with 5 cards.  Choice 1 = 0, choice 2 = 1.\n");
 
   /* Scenario setup */
   choice1 = 0;
@@ -144,8 +144,7 @@ int main(){
    * Variables:  Choice 1 = 0, choice 2 = 1
    * State Setup: Reduce cards in other players' hands to 4.
    */
-
-  printf("Test 3:  Player chooses to discard hand and receive 4 cards.  All other players have 4 cards in hand.  Choice 1 = 0, choice 2 = 1.\n");
+  printf("\nTest 3:  Player chooses to discard hand and receive 4 cards.  All other players have 4 cards in hand.  Choice 1 = 0, choice 2 = 1.\n");
 
   /* Scenario setup */
   for (int i = 0; i < state.numPlayers; i++){
@@ -209,7 +208,7 @@ int main(){
    */
 
   /* NOTE:  No need to verify other player hands...they are tested in previous cases */
-  printf("Test 4:  Player chooses to discard hand and receive 4 cards.  Edge case - player has 0 cards in hand.  Other players have 5.  Choice 1 = 0, choice 2 = 1.\n");
+  printf("\nTest 4:  Player chooses to discard hand and receive 4 cards.  Edge case - player has 0 cards in hand.  Other players have 5.  Choice 1 = 0, choice 2 = 1.\n");
 
   /* Scenario setup */
   state.handCount[thisPlayer] = 0;
