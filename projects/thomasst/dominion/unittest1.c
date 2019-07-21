@@ -30,7 +30,7 @@ int main(){
   int seed = 1000;
   int numPlayers = 2;
   int thisPlayer = 0;
-  int discarded = 0, newCards = 0, trashed = 0, addBuys = 0, extraCoins = 0;
+  int discarded = 0, newCards = 0, addBuys = 0, extraCoins = 0;
 
   struct gameState state, testState;
   int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
