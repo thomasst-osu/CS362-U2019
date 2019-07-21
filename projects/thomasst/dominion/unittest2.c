@@ -30,7 +30,7 @@ int main(){
   int seed = 1000;
   int numPlayers = 2;
   int thisPlayer = 0;
-  int newCards = 0, discarded = 0, extraCoins = 0;    // test variables
+  int newCards = 0, discarded = 0, extraCoins = 0, addActions = 1;    // test variables
 
   struct gameState state, testState;
   int k[10] = {adventurer, embargo, village, minion, mine, cutpurse,
@@ -42,9 +42,16 @@ int main(){
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
   /* ******************************* TEST 1 ******************************** */
-  // Test 1:  Choice 1 = 1.  Player chooses to receive +2 coins.
-  printf("Test 1:  Choice 1 = 1.  Player chooses to receive +2 coins.\n");
+  /* Action:  Player chooses to receive 2 coins.
+   * Expected Response:  Player discards minion card, receives 2 coins, receives 1 action
+   * Variables:  Choice 1 = 1
+   * State Setup:  - none -
+   */
+  printf("Test 1:  Player chooses to receive +2 coins.  Choice 1 = 1.\n");
+
+  /* Scenario setup */
   choice1 = 1;
+  discarded = 1;
   extraCoins = 2;
 
   // Copy original game state to a test state
@@ -53,13 +60,13 @@ int main(){
 
 
   // Verify number of actions increased by 1.
-  assertTrue(testState.numActions == state.numActions + 1, "Action Count",
-            testState.numActions, state.numActions + 1);
+  assertTrue(testState.numActions == state.numActions + addActions, "Action Count",
+            testState.numActions, state.numActions + addActions);
 
-  // Verify the player did not discard anything
-  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer],
+  // Verify the player discarded minion card
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
             "Discard Count", testState.discardCount[thisPlayer],
-            state.discardCount[thisPlayer]);
+            state.discardCount[thisPlayer] + discarded);
 
   // Verify the player received two extra coins
   assertTrue(testState.coins == state.coins + extraCoins, "Coins",
@@ -75,11 +82,15 @@ int main(){
 
 
   /* ******************************* TEST 2 ******************************** */
-  // Test 2:  Choice 1 = 0, choice 2 = 1.  Player chooses to discard hand and receive 4 cards.
-  // All other players have 5 cards in their hand and have to discard and redraw 4.
-  printf("Test 2:  Choice 1 = 0, choice 2 = 1.  \
-        Player chooses to discard hand and receive 4 cards.  \
-        All players start with 5 cards.\n");
+  /* Action:  Player chooses to discard hand.
+   * Expected Response:  Player discards hand, draws 4 cards, other players
+      discard hands (all players have 5 in hand) and draw 4 from deck.
+   * Variables:  Choice 1 = 0, choice 2 = 1
+   * State Setup: -none-
+   */
+  printf("Test 2:  Player chooses to discard hand and receive 4 cards.  All players start with 5 cards.  Choice 1 = 0, choice 2 = 1.\n");
+
+  /* Scenario setup */
   choice1 = 0;
   choice2 = 1;
   extraCoins = 0;
@@ -91,8 +102,8 @@ int main(){
   cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify number of actions increased by 1.
-  assertTrue(testState.numActions == state.numActions + 1, "Action Count",
-            testState.numActions, state.numActions + 1);
+  assertTrue(testState.numActions == state.numActions + addActions, "Action Count",
+            testState.numActions, state.numActions + addActions);
 
   // Verify player discarded 5 cards from hand
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
@@ -127,10 +138,21 @@ int main(){
 
 
   /* ******************************* TEST 3 ******************************** */
-  // Test 3:  Choice 1 = 0, choice 2 = 1.  Player chooses to discard hand and receive 4 cards.
-  // All other players have 4 cards in hand.
-  printf("Test 3:  Choice 1 = 0, choice 2 = 1.  Player chooses to discard hand and receive 4 cards.  \
-          All other players have 4 cards in hand.\n");
+  /* Action:  Player chooses to discard hand while other players only have 4 cards in hand.
+   * Expected Response:  Player discards hand, draws 4 new cards, and receives
+      one additional buy.  Other players remain the same.
+   * Variables:  Choice 1 = 0, choice 2 = 1
+   * State Setup: Reduce cards in other players' hands to 4.
+   */
+
+  printf("Test 3:  Player chooses to discard hand and receive 4 cards.  All other players have 4 cards in hand.  Choice 1 = 0, choice 2 = 1.\n");
+
+  /* Scenario setup */
+  for (int i = 0; i < state.numPlayers; i++){
+    if (i != thisPlayer){
+      state.handCount[i] = 4;
+    }
+  }
   choice1 = 0;
   choice2 = 1;
   extraCoins = 0;
@@ -139,20 +161,12 @@ int main(){
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-
-  // Ensure current player has 5 cards and the rest have 4.
-  for (int i = 0; i < testState.numPlayers; i++){
-    if (i != thisPlayer){
-      testState.handCount[i]--;   // all players start with 5 cards in hand
-    }
-  }
-
   cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
 
   // Verify number of actions increased by 1.
-  assertTrue(testState.numActions == state.numActions + 1, "Action Count",
-            testState.numActions, state.numActions + 1);
+  assertTrue(testState.numActions == state.numActions + addActions, "Action Count",
+            testState.numActions, state.numActions + addActions);
 
   // Verify player discarded 5 cards
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
@@ -175,8 +189,8 @@ int main(){
   // Verify other players have only 4 cards in hand
   for (int i = 0; i < state.numPlayers; i++){
     if (i != thisPlayer){
-      assertTrue(testState.handCount[i] == state.handCount[i] - 1, "Other Player Hand Count",
-                testState.handCount[i], state.handCount[i] - 1);
+      assertTrue(testState.handCount[i] == state.handCount[i], "Other Player Hand Count",
+                testState.handCount[i], state.handCount[i]);
     }
   }
 
@@ -187,12 +201,18 @@ int main(){
 
 
   /* ******************************* TEST 4 ******************************** */
-  // Test 4:  Choice 1 = 0, choice 2 = 1.  Player chooses to discard hand and receive 4 cards.
-  // Edge case - player has 0 cards in hand.  Other players have 5.
+  /* Action:  Player chooses to discard hand and receive 4 cards when there are
+      0 cards currently in their hand.
+   * Expected Response:  Player receives 4 cards and one buy.
+   * Variables:  Choice 1 = 0, choice 2 = 1.
+   * State Setup:  Player hand count = 0
+   */
 
   /* NOTE:  No need to verify other player hands...they are tested in previous cases */
-  printf("Test 4:  Choice 1 = 0, choice 2 = 1.  Player chooses to discard hand and receive 4 cards.  \
-          Edge case - player has 0 cards in hand.  Other players have 5.\n");
+  printf("Test 4:  Player chooses to discard hand and receive 4 cards.  Edge case - player has 0 cards in hand.  Other players have 5.  Choice 1 = 0, choice 2 = 1.\n");
+
+  /* Scenario setup */
+  state.handCount[thisPlayer] = 0;
   choice1 = 0;
   choice2 = 1;
   extraCoins = 0;
@@ -201,16 +221,12 @@ int main(){
 
   // Copy original game state to a test state
   memcpy(&testState, &state, sizeof(struct gameState));
-
-  // Ensure current player has 0 cards in hand.
-  testState.handCount[thisPlayer] = 0;
-
   cardEffect(minion, choice1, choice2, choice3, &testState, handpos, &bonus);
 
 
   // Verify number of actions increased by 1.
-  assertTrue(testState.numActions == state.numActions + 1, "Action Count",
-            testState.numActions, state.numActions + 1);
+  assertTrue(testState.numActions == state.numActions + addActions, "Action Count",
+            testState.numActions, state.numActions + addActions);
 
   // Verify that no cards were discarded during turn (player had 0 cards in hand).
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
