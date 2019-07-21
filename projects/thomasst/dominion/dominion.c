@@ -1310,6 +1310,8 @@ int playTributeCard(int currentPlayer, int nextPlayer, int tributeRevealedCards[
 }
 
 int playMineCard(int choice1, int choice2, int currentPlayer, int handPos, struct gameState *state){
+  // Choice 1 = card to trash   Choice 2 = card to gain
+
   //BUG #1
   int j = state->hand[currentPlayer][choice2];    // store card to be trashed later
 
