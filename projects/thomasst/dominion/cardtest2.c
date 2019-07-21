@@ -25,45 +25,82 @@
 ********************************************************************/
 
 int main(){
+  /* Intialize testing and game variables */
+  int numPlayers = 2;
+  int thisPlayer = 0;
+  int seed = 1000;
+  int k[10] = {adventurer, gardens, village, minion, mine, cutpurse,
+                sea_hag, tribute, smithy, council_room};
+  struct gameState state, testState;
+  initializeGame(numPlayers, k, seed, &state);
+
 
   printf("---------------- TESTING FUNCTION:  %s ----------------\n", TESTCARD);
 
   /* ******************************* TEST 1 ******************************** */
-  /* Action:
-   * Expected Response:
-   * Variables:
-   * Setup:
+  /* Action:  Normal shuffle test with full deck.
+   * Expected Response:  Random re-ordering of cards.
+   * Variables:  -none-
+   * Setup:  Initialize a new 2 player game, force 10 different cards into hand,
+      call shuffle.
    */
+  printf("\nTest 1:  Initialize game and shuffle a full deck for player 1.\n");
+
+  /* Scenario setup */
+  for (int i = 0; i < state.deckCount[thisPlayer]; i++){
+   state.deck[thisPlayer][i] = i + adventurer;    // load all cards in deck with different card
+  }
+
+  // Make a copy for comparison
+  memcpy(&testState, &state, sizeof(struct gameState));
+  int success = shuffle(thisPlayer, &testState);
+
+  int matches = 0;
+
+  // Compare decks
+  for (int i = 0; i < testState.deckCount[thisPlayer]; i++){
+   if (testState.deck[thisPlayer][i] == state.deck[thisPlayer][i]){
+     matches++;
+   }
+  }
+  if (matches == testState.deckCount[thisPlayer]){
+   printf("Assert Test FAILED\n\tAll cards matched original deck after shuffle.\n");
+  } else if (matches == 0){
+   printf("Assert Test PASSED\n\tNo cards matched original deck after shuffle.\n");
+  } else {
+   printf("Assert Test PASSED\n\t%d out of %d cards matched original deck after shuffle.\n", matches, testState.deckCount[thisPlayer]);
+  }
+
+  // Compare return value
+  assertTrue(success == 0, "Shuffle Function Return Value", success, 0);
 
 
 
   /* ******************************* TEST 2 ******************************** */
-  /* Action:
-  * Expected Response:
-  * Variables:
-  * Setup:
+  /* Action:  Shuffle call with 0 cards in deck
+  * Expected Response:  No deck response.  Return value of -1
+  * Variables:  -none-
+  * Setup:  Reduce deckCount variable to 0, run shuffle function.
   */
+  printf("\nTest 2:  Attempt to run shuffle function on deck with 0 cards.\n");
+
+  /* Scenario setup */
+  state.deckCount[thisPlayer] = 0;
+
+  /* Make a copy for comparison */
+  memcpy(&testState, &state, sizeof(struct gameState));
+  int success = shuffle(thisPlayer, &testState);
+
+  /* Ensure deck count remained at 0 */
+  assertTrue(testState.deckCount[thisPlayer] == state.deckCount[thisPlayer], "Player Deck Count",
+    testState.deckCount[thisPlayer], state.deckCount[thisPlayer]);
+
+  /* Compare return value */
+  assertTrue(success == -1, "Shuffle Function Return Value", success, -1);
 
 
-
-  /* ******************************* TEST 3 ******************************** */
-  /* Action:
-   * Expected Response:
-   * Variables:
-   * Setup:
-   */
-
-
-  /* ******************************* TEST 4 ******************************** */
-  /* Action:
-  * Expected Response:
-  * Variables:
-  * Setup:
-  */
 
   printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
 
   return 0;
 }
-// Test when indicated player has 0 cards in deck
-// Test a full deck
