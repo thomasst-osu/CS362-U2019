@@ -29,8 +29,6 @@ int main(){
   int newCards = 0;
   int discarded = 1;
   int trashed = 0;
-  int xtraCoins = 0;
-  int shuffleCards = 0;
 
   int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
   int seed = 1000;
@@ -42,7 +40,7 @@ int main(){
                 sea_hag, tribute, smithy, council_room};
 
   /* Initialize game state and player cards */
-  initializeGame(numPlayers, k, seed, &G);
+  initializeGame(numPlayers, k, seed, &state);
 
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
@@ -54,7 +52,7 @@ int main(){
    * State Setup: Player hand [0] = mine, [1 - 4] = copper.
    */
   // Player chooses to trash a copper for a silver
-  printf("\nPlayer chooses to trash a copper for a silver.  Choice 1 = 1, choice 2 = silver.\n");
+  printf("\nTest 1:  Player chooses to trash a copper for a silver.  Choice 1 = 1, choice 2 = silver.\n");
 
   /* Modify base state for scenario */
   state.hand[thisPlayer][0] = mine;
@@ -100,7 +98,7 @@ int main(){
   assertTrue(testCopperCount == copperCount - trashed, "Player Copper in Hand", testCopperCount, copperCount - trashed);
 
   // Verify played card in discard (1 mine)
-  assertTrue(testState.discardCount[thisPlayer] = state.discardCount[thisPlayer] + discarded,
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
             "Player Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + discarded);
 
   // Verify played card is a mine
@@ -118,7 +116,7 @@ int main(){
    * Variables:  choice 1 = 1 (copper), choice 2 = gold.
    * State Setup:  Player hand [0] = mine, [1 - 4] = copper
    */
-  printf("\nPlayer tries to trash copper for a gold.  Choice 1 = 1, choice 2 = gold.\n");
+  printf("\nTest 2:  Player tries to trash copper for a gold.  Choice 1 = 1, choice 2 = gold.\n");
 
   /* Scenario setup */
   // -- no changes to state needed from previous test
@@ -131,20 +129,23 @@ int main(){
   cardEffect(mine, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify the number of cards in hand (5 - no cards gained/discarded)
-  assertTrue(testState.handCount[thisPlayer] = state.handCount[thisPlayer], "Player Hand Count",
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer], "Player Hand Count",
             testState.handCount[thisPlayer], state.handCount[thisPlayer]);
 
   // Verify the contents of player's hand (1 mine, 4 copper)
   copperCount = 0;
   testCopperCount = 0;
-  int mineCount, testMineCount;
+  int goldCount = 0, testGoldCount = 0;
+  int mineCount = 0, testMineCount = 0;
 
   for (int i = 0; i < state.handCount[thisPlayer]; i++){
     if (state.hand[thisPlayer][i] == copper){
       copperCount++;
     } else if (state.hand[thisPlayer][i] == mine){
       mineCount++;
-    }
+    } else if (state.hand[thisPlayer][i] == gold){
+	  goldCount++;
+	}
   }
 
   for (int i = 0; i < testState.handCount[thisPlayer]; i++){
@@ -152,10 +153,13 @@ int main(){
       testCopperCount++;
     } else if (testState.hand[thisPlayer][i] == mine){
       testMineCount++;
-    }
+    } else if (testState.hand[thisPlayer][i] == gold){
+	  testGoldCount++;
+	}
   }
   assertTrue(testCopperCount == copperCount, "Player Copper in Hand", testCopperCount, copperCount);
   assertTrue(testMineCount == mineCount, "Player Mine in Hand", testMineCount, mineCount);
+  assertTrue(testGoldCount == goldCount, "Player Gold in Hand", testGoldCount, goldCount);
 
   // Verify no cards in discard
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
@@ -170,8 +174,7 @@ int main(){
    * Variables:  choice 1 = 1 (copper), choice 2 = adventurer
    * State Setup:  Player hand [0] = mine, [1 - 4] = copper
    */
-  printf("\nPlayer tries to trade a copper for an action card (adventurer).  \
-            Choice 1 = 1, choice 2 = adventurer.\n");
+  printf("\nTest 3:  Player tries to trade a copper for an action card (adventurer). Choice 1 = 1, choice 2 = adventurer.\n");
 
   /* Scenario setup */
   // -- no changes to state needed from previous state
@@ -184,20 +187,22 @@ int main(){
 
 
   // Verify the number of cards in hand (5 - no cards gained/discarded)
-  assertTrue(testState.handCount[thisPlayer] = state.handCount[thisPlayer], "Player Hand Count",
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer], "Player Hand Count",
             testState.handCount[thisPlayer], state.handCount[thisPlayer]);
 
   // Verify the contents of player's hand (1 mine, 4 copper)
-  copperCount = 0;
-  testCopperCount = 0;
-  int mineCount, testMineCount;
+  copperCount = 0; testCopperCount = 0;
+  mineCount = 0; testMineCount = 0;
+  int adventurerCount = 0, testAdventurerCount = 0;
 
   for (int i = 0; i < state.handCount[thisPlayer]; i++){
     if (state.hand[thisPlayer][i] == copper){
       copperCount++;
     } else if (state.hand[thisPlayer][i] == mine){
       mineCount++;
-    }
+    } else if (state.hand[thisPlayer][i] == adventurer){
+	  adventurerCount++;
+	}
   }
 
   for (int i = 0; i < testState.handCount[thisPlayer]; i++){
@@ -205,10 +210,14 @@ int main(){
       testCopperCount++;
     } else if (testState.hand[thisPlayer][i] == mine){
       testMineCount++;
-    }
+    } else if (testState.hand[thisPlayer][i] == adventurer){
+	  testAdventurerCount++;
+	}
   }
   assertTrue(testCopperCount == copperCount, "Player Copper in Hand", testCopperCount, copperCount);
   assertTrue(testMineCount == mineCount, "Player Mine in Hand", testMineCount, mineCount);
+  assertTrue(testAdventurerCount == adventurerCount, "Player Adventurer in Hand",
+  	testAdventurerCount, adventurerCount);
 
   // Verify no cards in discard
   assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
@@ -223,8 +232,7 @@ int main(){
    * Variables: choice 1 = 1 (province), choice 2 = silver
    * State Setup:  Player hand [0] = mine, [1] = province, [2 - 4] = copper
    */
-  printf("\nPlayer tries to trade a non-treasure card for a silver.  \
-            Choice 1 = 1 (province), choice 2 = silver.\n");
+  printf("\nTest 4:  Player tries to trade a non-treasure card for a silver.  Choice 1 = 1 (province), choice 2 = silver.\n");
 
   /* Scenario setup */
   state.hand[thisPlayer][1] = province;
@@ -237,7 +245,7 @@ int main(){
   cardEffect(mine, choice1, choice2, choice3, &testState, handpos, &bonus);
 
   // Verify the number of cards in hand (5 - no cards gained/discarded)
-  assertTrue(testState.handCount[thisPlayer] = state.handCount[thisPlayer], "Player Hand Count",
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer], "Player Hand Count",
             testState.handCount[thisPlayer], state.handCount[thisPlayer]);
 
   // Verify the contents of player's hand (1 mine, 1 province, 3 copper)
@@ -275,7 +283,70 @@ int main(){
 
 
 
-  printf("################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
+  /* ******************************* TEST 5 ******************************** */
+  /* Action: Player trades a silver for a copper.
+   * Expected Response: Player gains a copper, trashes a silver, and discards a mine. 
+   * Variables: Choice 1 = 1 (silver), choice 2 = copper 
+   * State Setup: Player hand [0] = mine, [1] = silver, [2 - 4] = copper
+   */
+  printf("\nPlayer trades a silver for a copper.  Choice 1 = 1 (silver), choice 2 = copper.\n");
+
+  /* Scenario setup */
+  state.hand[thisPlayer][1] = silver;
+  choice1 = 1;
+  choice2 = copper;
+  discarded = 1;
+  trashed = 1;
+  newCards = 1;
+
+
+  // Copy original game state to a test state
+  memcpy(&testState, &state, sizeof(struct gameState));
+  cardEffect(mine, choice1, choice2, choice3, &testState, handpos, &bonus);
+
+
+// Verify the number of cards in hand (5 - silver - mine + copper = 4)
+  assertTrue(testState.handCount[thisPlayer] == state.handCount[thisPlayer] - discarded - trashed + newCards,
+            "Player Hand Count", testState.handCount[thisPlayer],
+            state.handCount[thisPlayer] - discarded - trashed + newCards);
+
+  // Verify the contents of player's hand (4 copper)
+  copperCount = 0;  testCopperCount = 0;
+  silverCount = 0;  testSilverCount = 0;
+
+  for (int i = 0; i < state.handCount[thisPlayer]; i++){
+    if (state.hand[thisPlayer][i] == copper){
+      copperCount++;
+    } else if (state.hand[thisPlayer][i] == silver){
+      silverCount++;
+    }
+  }
+
+  for (int i = 0; i < testState.handCount[thisPlayer]; i++){
+    if (testState.hand[thisPlayer][i] == copper){
+      testCopperCount++;
+    } else if (testState.hand[thisPlayer][i] == silver){
+      testSilverCount++;
+    }
+  }
+
+  assertTrue(testCopperCount == copperCount + newCards, "Player Copper in Hand", testCopperCount, copperCount + newCards);
+  assertTrue(testSilverCount == silverCount - trashed, "Player Silver in Hand", testSilverCount, silverCount - trashed);
+
+  // Verify played card in discard (1 mine)
+  assertTrue(testState.discardCount[thisPlayer] == state.discardCount[thisPlayer] + discarded,
+            "Player Discard Count", testState.discardCount[thisPlayer], state.discardCount[thisPlayer] + discarded);
+
+  // Verify played card is a mine
+  if (testState.discardCount[thisPlayer] == 1){
+    assertTrue(testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1] == mine,
+              "Mine in Player Discard", testState.discard[thisPlayer][testState.discardCount[thisPlayer] - 1],
+              mine);
+  }
+
+
+
+  printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
 
   return 0;
 
