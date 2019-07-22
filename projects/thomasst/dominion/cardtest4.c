@@ -62,8 +62,8 @@ int main(){
   getWinners(players, &testState);
 
   // Verify player's turn
-  assertTrue(testState->whoseTurn == thisPlayer, "Whose Turn",
-  testState->whoseTurn, thisPlayer);
+  assertTrue(testState.whoseTurn == thisPlayer, "Whose Turn",
+  testState.whoseTurn, thisPlayer);
 
   // Test contents of player array
   for (int i = 0; i < MAX_PLAYERS; i++){
@@ -96,8 +96,8 @@ int main(){
     getWinners(players, &testState);
 
     // Test whose turn
-    assertTrue(testState->whoseTurn == nextPlayer, "Whose Turn",
-      testState->whoseTurn, nextPlayer);
+    assertTrue(testState.whoseTurn == nextPlayer, "Whose Turn",
+      testState.whoseTurn, nextPlayer);
 
     // Test contents of player array
     for (int i = 0; i < MAX_PLAYERS; i++){
@@ -116,7 +116,7 @@ int main(){
   * Variables: players[MAX_PLAYERS] array to hold player scores
   * Setup:  Add a province to player 2's deck
   */
-  printf("\nTest 3:  2 player game where player 2 has more victory points.\n")
+  printf("\nTest 3:  2 player game where player 2 has more victory points.\n");
 
   /* Scenario setup */
   winner = -1;
@@ -126,6 +126,31 @@ int main(){
   memcpy(&testState, &state, sizeof(struct gameState));
   testState.deck[nextPlayer][testState.deckCount[nextPlayer] - 1] = province;
   getWinners(players, &testState);
+
+  int p1 = 0;
+  int p2 = 0;
+  for (int i = 0; i < testState.handCount[thisPlayer]; i++){
+	if (testState.hand[thisPlayer][i] == estate){
+	  p1++;
+	} else if (testState.hand[thisPlayer][i] == province){
+	  p1 = p1 + 6;
+	}
+  }
+  for (int i = 0; i < testState.deckCount[thisPlayer]; i++){
+	if (testState.deck[thisPlayer][i] == estate){
+	  p1++;
+	} else if (testState.deck[thisPlayer][i] == province){
+	  p1 = p1 + 6;
+	}
+  }
+  for (int i = 0; i < testState.deckCount[nextPlayer]; i++){
+	if (testState.deck[nextPlayer][i] == estate){
+	  p2++;
+	} else if (testState.deck[nextPlayer][i] == province){
+	  p2 = p2 + 6;
+	}
+  }
+  printf("Player 1 score:  %d\nPlayer 2 score:  %d\n\n", p1, p2);
 
   // Test contents of player array
   for (int i = 0; i < MAX_PLAYERS; i++){
