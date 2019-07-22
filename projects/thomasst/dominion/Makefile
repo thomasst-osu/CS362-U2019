@@ -74,6 +74,7 @@ unittestresults: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5 cardTest1 car
 	./cardtest4 >> unittestresults.out
 	./cardtest5 >> unittestresults.out
 	gcov -f dominion.c >> unittestresults.out
+	gcov -b dominion.c
 
 all: playdom player
 
