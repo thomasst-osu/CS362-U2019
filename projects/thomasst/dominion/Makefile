@@ -62,17 +62,18 @@ cardTest4: cardtest4.c dominion.o rngs.o
 cardTest5: cardtest5.c dominion.o rngs.o
 	gcc -o cardtest5 -g cardtest5.c unittest_helper.c dominion.o rngs.o $(CFLAGS)
 
-runUnitTests: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5
+unittestresults: unitTest1 unitTest2 unitTest3 unitTest4 unitTest5 cardTest1 cardTest2 cardTest3 cardTest4 cardTest5
 	./unittest1 >> unittestresults.out
+	./unittest2 >> unittestresults.out
+	./unittest3 >> unittestresults.out
+	./unittest4 >> unittestresults.out
+	./unittest5 >> unittestresults.out
+	./cardtest1 >> unittestresults.out
+	./cardtest2 >> unittestresults.out
+	./cardtest3 >> unittestresults.out
+	./cardtest4 >> unittestresults.out
+	./cardtest5 >> unittestresults.out
 	gcov -f dominion.c >> unittestresults.out
-	#./unittest2 >> unittestresults.out
-	#gcov dominion.c >> unittestresults.out
-	#./unittest3 >> unittestresults.out
-	#gcov dominion.c >> unittestresults.out
-	#./unittest4 >> unittestresults.out
-	#gcov dominion.c >> unittestresults.out
-	#./unittest5 >> unittestresults.out
-	#gcov dominion.c >> unittestresults.out
 
 all: playdom player
 

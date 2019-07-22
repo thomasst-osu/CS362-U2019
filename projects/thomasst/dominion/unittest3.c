@@ -324,7 +324,7 @@ int main(){
 
 
 
-  printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
+  printf("\n################## TESTING COMPLETE:  %s ##################\n\n\n", TESTCARD);
 
   return 0;
 

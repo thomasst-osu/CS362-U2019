@@ -27,7 +27,6 @@ int main(){
   /* Intialize testing and game variables */
   int numPlayers = 2;
   int thisPlayer = 0;
-  int nextPlayer = thisPlayer + 1;
   int seed = 1000;
   int k[10] = {adventurer, gardens, village, minion, mine, cutpurse,
                 sea_hag, tribute, smithy, council_room};
@@ -137,7 +136,7 @@ int main(){
 
    // Make a copy for comparison
    memcpy(&testState, &state, sizeof(struct gameState));
-   drawCard(thisPlayer, &testState);
+   int success = drawCard(thisPlayer, &testState);
 
    // Test discard pile
    assertTrue(testState.discardCount[thisPlayer] == 0,
@@ -151,11 +150,14 @@ int main(){
    // Test deck count
    assertTrue(testState.deckCount[thisPlayer] == 0,
      "Player Deck Count", testState.deckCount[thisPlayer], 0);
+   
+   // Test return value
+   assertTrue(success == -1, "Function Return Value", success, -1);
 
 
 
 
-  printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
+  printf("\n################## TESTING COMPLETE:  %s ##################\n\n\n", TESTCARD);
 
   return 0;
 }

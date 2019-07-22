@@ -221,7 +221,7 @@ int main(){
 
 
 
-  printf("\n################## %s TESTING COMPLETE ##################\n", TESTCARD);
+  printf("\n################## %s TESTING COMPLETE ##################\n\n\n", TESTCARD);
 
   return 0;
 
