@@ -23,46 +23,147 @@
 5)  Sets winner to 1 in the player array and the rest to 0
 ********************************************************************/
 
+/* Helper function to empty player array */
+void emptyArray(int players[MAX_PLAYERS]){
+  for (int i = 0; i < MAX_PLAYERS; i++){
+    players[i] = 0;
+  }
+}
+
 int main(){
+  /* Initialize testing and game variables */
+  int numPlayers = 2;
+  int thisPlayer = 0;
+  int nextPlayer = thisPlayer + 1;
+  int winner = -1;
+  int seed = 1000;
+  int k[10] = {adventurer, gardens, village, minion, mine, cutpurse,
+                sea_hag, tribute, smithy, council_room};
+  int players[MAX_PLAYERS];
+  struct gameState state, testState;
+
+  initializeGame(numPlayers, k, seed, &state);
+
+  // int getWinners(int players[MAX_PLAYERS], struct gameState *state)
 
   printf("---------------- TESTING FUNCTION:  %s ----------------\n", TESTCARD);
 
   /* ******************************* TEST 1 ******************************** */
-  /* Action:
-   * Expected Response:
-   * Variables:
-   * Setup:
+  /* Action:  Test 2 player game where players have equal victory points and
+      it is player 1's turn
+   * Expected Response:  Player 2 wins because they have had fewer turns
+   * Variables:  players[MAX_PLAYERS] array to hold player scores, game state
+   * Setup:  Initialize game and immediately call getWinners
    */
+  printf("\nTest 1:  2 player game ends on player 1's turn.\n");
+
+  /* Make a copy for comparison */
+  memcpy(&testState, &state, sizeof(struct gameState));
+  getWinners(players, &testState);
+
+  // Verify player's turn
+  assertTrue(testState->whoseTurn == thisPlayer, "Whose Turn",
+  testState->whoseTurn, thisPlayer);
+
+  // Test contents of player array
+  for (int i = 0; i < MAX_PLAYERS; i++){
+    if (players[i] == 1){
+     winner = i;
+    }
+  }
+
+  // Verify winner
+  assertTrue(winner == nextPlayer, "Winning Player", winner, nextPlayer);
 
 
 
-  /* ******************************* TEST 2 ******************************** */
-  /* Action:
-  * Expected Response:
-  * Variables:
-  * Setup:
-  */
+   /* ******************************* TEST 2 ******************************** */
+   /* Action:  Test 2 player game where players have equal victory points and
+       it is player 2's turn
+    * Expected Response:  Tie
+    * Variables:  players[MAX_PLAYERS] array to hold player scores, game state
+    * Setup:  Initialize game and immediately call getWinners
+    */
+    printf("\nTest 2:  2 player game ends on player 2's turn.\n");
+
+    /* Scenario setup */
+    winner = -1;
+    emptyArray(players);
+
+    /* Make a copy for comparison */
+    memcpy(&testState, &state, sizeof(struct gameState));
+    endTurn(&testState);
+    getWinners(players, &testState);
+
+    // Test whose turn
+    assertTrue(testState->whoseTurn == nextPlayer, "Whose Turn",
+      testState->whoseTurn, nextPlayer);
+
+    // Test contents of player array
+    for (int i = 0; i < MAX_PLAYERS; i++){
+      if (players[i] == 1){
+        winner = i;
+      }
+    }
+
+    assertTrue(winner == -1, "Winning Player", winner, -1);
 
 
 
   /* ******************************* TEST 3 ******************************** */
-  /* Action:
-   * Expected Response:
-   * Variables:
-   * Setup:
-   */
+  /* Action:  Test 2 player game where player 2 has more victory points
+  * Expected Response: Player 2 wins
+  * Variables: players[MAX_PLAYERS] array to hold player scores
+  * Setup:  Add a province to player 2's deck
+  */
+  printf("\nTest 3:  2 player game where player 2 has more victory points.\n")
+
+  /* Scenario setup */
+  winner = -1;
+  emptyArray(players);
+
+  /* Make a copy for comparison */
+  memcpy(&testState, &state, sizeof(struct gameState));
+  testState.deck[nextPlayer][testState.deckCount[nextPlayer] - 1] = province;
+  getWinners(players, &testState);
+
+  // Test contents of player array
+  for (int i = 0; i < MAX_PLAYERS; i++){
+    if (players[i] == 1){
+      winner = i;
+    }
+  }
+  assertTrue(winner == nextPlayer, "Winning Player", winner, nextPlayer);
+
 
 
   /* ******************************* TEST 4 ******************************** */
-  /* Action:
-  * Expected Response:
-  * Variables:
-  * Setup:
-  */
+  /* Action:  Test 2 player game where player 1 has more victory points
+   * Expected Response:  Player 1 wins
+   * Variables: players[MAX_PLAYERS] array to hold player scores
+   * Setup:  Add a province to player 1's deck
+   */
+  printf("\nTest 4:  2 player game where player 1 has more victory points.\n");
+
+  /* Scenario setup */
+  winner = -1;
+  emptyArray(players);
+
+  /* Make a copy for comparison */
+  memcpy(&testState, &state, sizeof(struct gameState));
+  testState.deck[thisPlayer][testState.deckCount[thisPlayer] - 1] = province;
+  getWinners(players, &testState);
+
+  /* Test contents of player array */
+  for (int i = 0; i < MAX_PLAYERS; i++){
+    if (players[i] == 1){
+      winner = i;
+    }
+  }
+  assertTrue(winner == thisPlayer, "Winning Player", winner, thisPlayer);
+
 
   printf("\n################## TESTING COMPLETE:  %s ##################\n", TESTCARD);
 
   return 0;
 }
-// Test with less than max players
-// Test with non-first player winning
