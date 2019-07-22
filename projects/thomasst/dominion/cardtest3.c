@@ -98,7 +98,7 @@ int main(){
   * Variables:
   * Setup:
   */
-  printf("Test 2:  Initialize game, end player 1's turn, end player 2's turn.\n");
+  printf("\nTest 2:  Initialize game, end player 1's turn, end player 2's turn.\n");
 
   /* Make a copy for comparison */
   memcpy(&testState, &state, sizeof(struct gameState));
