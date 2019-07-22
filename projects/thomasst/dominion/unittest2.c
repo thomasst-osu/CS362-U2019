@@ -91,6 +91,12 @@ int main(){
   printf("\nTest 2:  Player chooses to discard hand and receive 4 cards.  All players start with 5 cards.  Choice 1 = 0, choice 2 = 1.\n");
 
   /* Scenario setup */
+  for (int i = 0; i < state.numPlayers; i++){
+      if (i != thisPlayer){
+        state.handCount[i] = 5;
+      }
+  }
+
   choice1 = 0;
   choice2 = 1;
   extraCoins = 0;
