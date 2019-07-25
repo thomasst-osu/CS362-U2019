@@ -5,18 +5,19 @@
 
 char inputChar()
 {
-  char c = (rand() % 93) + 33;
+  char c = (rand() % 94) + 32;
   return c;
 }
 
 char *inputString()
 {
   char *s;
+  char x[6];
   for (int i = 0; i < 5; i++){
-    97 - 122
-    s[i] = (rand() % 26) + 97;
+    x[i] = (rand() % 16) + 101;
   }
 
+  s = x;
   return s;
 }
 
