@@ -35,6 +35,11 @@ int isEstateInHand(){
 int testCard(int player, int choice1, struct gameState *after){
   // cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handpos, int *bonus)
   // playBaronCard(int choice1, int currentPlayer, struct gameState *state)
+
+  // print card test
+  for (int i = 0; i < after->handCount[player]; i++){
+    printf("Card #%d:  %d\n", i, after->hand[player][i]);
+  }
 }
 
 int main(){
