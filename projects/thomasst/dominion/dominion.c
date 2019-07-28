@@ -662,7 +662,6 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
     nextPlayer = 0;
   }
 
-
   //uses switch to select card and perform actions
   switch( card )
     {
@@ -1107,7 +1106,6 @@ void drawNumCards(int player, int numCards, struct gameState *state){
 // CARD FUNCTIONS
 int playBaronCard(int choice1, int currentPlayer, struct gameState *state){
   state->numBuys++;   // increase buys by 1
-
   if (choice1 > 0){
     int p = 0;    // iterator for hand
     int card_not_discarded = 1;   // flag for discard set

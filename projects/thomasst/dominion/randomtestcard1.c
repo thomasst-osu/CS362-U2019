@@ -13,6 +13,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
 
 #define TESTCARD "baron"
 #define MAX_TESTS 5000
@@ -24,22 +26,118 @@
     current estate in hand.
 4)  Player receives an extra buy.
 ********************************************************************/
-int printParams(){
+int printParams(int player, struct gameState *before, struct gameState *after){
+	
+	// Coins
+	if (after->coins != before->coins){
+		printf("\tCoins = %d, expected %d\n", after->coins, before->coins);
+	}
+	
+	// Num Buys
+	if (after->numBuys != before->numBuys){
+		printf("\tNumber of Buys = %d, expected %d\n", after->numBuys, before->numBuys);
+	}
+	
+	// Discard Count
+	if (after->discardCount[player] != before->discardCount[player]){
+		printf("\tDiscard Count = %d, expected %d\n", after->discardCount[player], before->discardCount[player]);
+	}
 
+	// Discard Contents
+	if (memcmp(after->discard[player], before->discard[player], sizeof(int) * before->discardCount[player]) != 0){
+		printf("\tContents of Discard Pile do not match.\n");
+	}
+
+	// Hand Count
+	if (after->handCount[player] != before->handCount[player]){
+		printf("\tHand Count = %d, expected %d\n", after->handCount[player], before->handCount[player]);
+	}
+
+	// Hand Contents
+	if (memcmp(after->hand[player], before->hand[player], sizeof(int) * before->handCount[player]) != 0){
+		printf("\tContents of Hand do not match.\n");
+	}
+
+	// Deck Count
+	if (after->deckCount[player] != before->deckCount[player]){
+		printf("\tDeck Count = %d, expected %d\n", after->deckCount[player], before->deckCount[player]);
+	}
+
+	// Deck Contents
+	if (memcmp(after->deck[player], before->deck[player], sizeof(int) * before->deckCount[player]) != 0){
+		printf("\tContents of Deck do not match.\n");
+	}
+
+	// Estate supply
+	if (after->supplyCount[estate] != before->supplyCount[estate]){
+		printf("\tEstate Supply = %d, expected %d\n", after->supplyCount[estate], before->supplyCount[estate]);
+	}
+
+
+	return 0;
 }
 
-int isEstateInHand(){
+int isEstateInHand(int player, struct gameState *state){
+	int inHand = -1;
+	for (int i = 0; i < state->handCount[player]; i++){
+		if (state->hand[player][i] == estate){
+			inHand = i;
+		}
+	}
 
+	return inHand;
 }
 
 int testCard(int player, int choice1, struct gameState *after){
   // cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handpos, int *bonus)
   // playBaronCard(int choice1, int currentPlayer, struct gameState *state)
 
-  // print card test
-  for (int i = 0; i < after->handCount[player]; i++){
-    printf("Card #%d:  %d\n", i, after->hand[player][i]);
-  }
+	int choice2 = 0, choice3 = 0, handpos = 0, bonus = 0;
+	struct gameState before;
+	memcpy(&before, after, sizeof(struct gameState));
+
+	cardEffect(baron, choice1, choice2, choice3, after, handpos, &bonus);
+
+	// Mimick behavior in before game state
+	int estatePos = isEstateInHand(player, &before);
+	int estatePosCopy = estatePos;
+	before.numBuys++;
+
+	if (choice1 > 0){
+		if (estatePos != -1){
+			before.coins += 4;
+			before.discardCount[player]++;
+			before.discard[player][before.discardCount[player] - 1] = estate;
+			for (; estatePos < before.handCount[player]; estatePos++){
+				before.hand[player][estatePos] = before.hand[player][estatePos + 1];
+			}
+			before.hand[player][before.handCount[player]] = -1;
+			before.handCount[player]--;
+		}
+		else {
+			if (before.supplyCount[estate] > 0){
+				before.supplyCount[estate]--;
+				before.discardCount[player]++;
+				before.discard[player][before.discardCount[player] - 1] = estate;
+			}
+		}
+	}
+	else {
+		if (before.supplyCount[estate] > 0){
+			before.supplyCount[estate]--;
+			before.discardCount[player]++;
+			before.discard[player][before.discardCount[player] - 1] = estate;
+		}
+	}
+	
+	// Compare game states, if different print out details
+	if (memcmp(&before, after, sizeof(struct gameState)) == 0){
+		printf("Random Test PASSED\n");
+	} else {
+		printf("Random Test FAILED (choice1 = %d, estateInHand = %d)\n", choice1, estatePosCopy);
+		printParams(player, &before, after);
+	}
+	return 0;
 }
 
 int main(){
@@ -74,6 +172,25 @@ int main(){
     state.deckCount[player] = floor(Random() * MAX_DECK);
     state.handCount[player] = floor(Random() * MAX_HAND);
     state.discardCount[player] = floor(Random() * MAX_DECK);
+	state.supplyCount[estate] = floor(Random() * 10);
+	state.coins = floor(Random() * 10);
+	state.numBuys = floor(Random() * 10);
+	state.whoseTurn = player;
+
+	// Populate hand randomly
+	for (int k = 0; k < state.handCount[player]; k++){
+		state.hand[player][k] = floor(Random() * (treasure_map + 1));
+	} 
+
+	// Populate deck randomly
+	for (int k = 0; k < state.deckCount[player]; k++){
+		state.deck[player][k] = floor(Random() * (treasure_map + 1));
+	}
+
+	// Populate discard randomly
+	for (int k = 0; k < state.discardCount[player]; k++){
+		state.discard[player][k] = floor(Random() * (treasure_map + 1));
+	}
 
     testCard(player, choice1, &state);
   }
