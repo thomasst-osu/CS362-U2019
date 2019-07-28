@@ -131,7 +131,7 @@ int getWinners(int players[MAX_PLAYERS], struct gameState *state);
 
 // --------START OF REFACTOR CODE------------
 // HELPER FUNCTIONS
-void discardAll(int handPos, int player, struct gameState *state);
+void discardAll(int player, struct gameState *state);
 void drawNumCards(int player, int numCards, struct gameState *state);
 
 // CARD FUNCTIONS

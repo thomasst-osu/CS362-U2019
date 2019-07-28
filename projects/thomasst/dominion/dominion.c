@@ -985,7 +985,6 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
 
 int discardCard(int handPos, int currentPlayer, struct gameState *state, int trashFlag)
 {
-
   //if card is not trashed, added to Played pile
   if (trashFlag < 1)
     {
@@ -993,7 +992,6 @@ int discardCard(int handPos, int currentPlayer, struct gameState *state, int tra
       state->playedCards[state->playedCardCount] = state->hand[currentPlayer][handPos];
       state->playedCardCount++;
     }
-
   //set played card to -1
   state->hand[currentPlayer][handPos] = -1;
 
@@ -1091,9 +1089,9 @@ int updateCoins(int player, struct gameState *state, int bonus)
 
 // -------------------START OF REFACTOR CODE---------------------
 // HELPER FUNCTIONS
-void discardAll(int handPos, int player, struct gameState *state){
+void discardAll(int player, struct gameState *state){
   while (state->handCount[player] > 0){
-    discardCard(handPos, player, state, 0);
+    discardCard(0, player, state, 0);
   }
 }
 
@@ -1171,8 +1169,8 @@ int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, str
   }
   else if (choice2){    // discard hand, redraw 4, other players with 5+ cards must discard hand and draw 4 cards
     // Discard hand
-    discardAll(handPos, currentPlayer, state);
-
+    discardAll(currentPlayer, state);
+	
     // Draw 4 cards
     drawNumCards(currentPlayer, 4, state);
 
@@ -1180,7 +1178,7 @@ int playMinionCard(int choice1, int choice2, int currentPlayer, int handPos, str
     for (int i = 0; i < state->numPlayers; i++){
       if (i != currentPlayer){
         if (state->handCount[i] > 4){
-          discardAll(handPos, currentPlayer, state);  // BUG #2
+          discardAll(currentPlayer, state);  // BUG #2
           drawNumCards(i, 4, state);
         }
       }

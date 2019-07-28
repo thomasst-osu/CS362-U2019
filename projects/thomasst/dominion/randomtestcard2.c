@@ -25,6 +25,7 @@
     and force all other players with 5 cards in their hand to discard
     and draw 4 cards.
 ********************************************************************/
+
 int printParams(int player, struct gameState *before, struct gameState *after){
   // numActions
   if (after->numActions != before->numActions){
@@ -67,7 +68,7 @@ int printParams(int player, struct gameState *before, struct gameState *after){
   }
 
   // Other players hand count/content, deck count/content, discard count/content
-  for (int i = 0; i < before.numPlayers; i++){
+  for (int i = 0; i < before->numPlayers; i++){
     if (i != player){
       // Player hand count
       if (after->handCount[i] != before->handCount[i]){
@@ -97,8 +98,11 @@ int printParams(int player, struct gameState *before, struct gameState *after){
       // Player discard content
       if (memcmp(after->discard[i], before->discard[i], sizeof(int) * before->discardCount[i])){
         printf("\tContents of Other Player Discard do not match.\n");
+      }
     }
   }
+
+  return 0;
 }
 
 int testCard(int choice1, int choice2, int player, int handpos, struct gameState *after){
@@ -110,7 +114,7 @@ int testCard(int choice1, int choice2, int player, int handpos, struct gameState
   memcpy(&before, after, sizeof(struct gameState));
 
   cardEffect(minion, choice1, choice2, choice3, after, handpos, &bonus);
-
+  //
   // Mimick anticipated behavior in before game state
   before.numActions++;
 
@@ -119,7 +123,8 @@ int testCard(int choice1, int choice2, int player, int handpos, struct gameState
   }
   else if (choice2){
     if (before.deckCount[player] >= 4){
-      for (int i = 0; i < before.handCount[player]; i++){
+	  int handCountCopy = before.handCount[player];
+      for (int i = 0; i < handCountCopy; i++){
         before.discard[player][before.discardCount[player]] = before.hand[player][i];
         before.discardCount[player]++;
         before.hand[player][i] = -1;
@@ -129,20 +134,22 @@ int testCard(int choice1, int choice2, int player, int handpos, struct gameState
       for (int i = 0; i < 4; i++){
         before.hand[player][before.handCount[player]] = before.deck[player][before.deckCount[player] - 1];
         before.deckCount[player]--;
+		before.handCount[player]++;
       }
     }
     else {
       before.discardCount[player] = 0;
       before.handCount[player] = 4;
+	  before.deckCount[player] = after->deckCount[player];
       memcpy(before.hand[player], after->hand[player], sizeof(int) * before.handCount[player]);
-      memcpy(before.deckCount[player], after->deckCount[player], sizeof(int));
       memcpy(before.deck[player], after->deck[player], sizeof(int) * before.deckCount[player]);
     }
 
     for (int i = 0; i < before.numPlayers; i++){
       if (i != player){
         if (before.deckCount[i] >= 4){
-          for (int j = 0; j < before.handCount[i]; j++){
+		  int handCountCopy = before.handCount[i];
+          for (int j = 0; j < handCountCopy; j++){
             before.discard[i][before.discardCount[i]] = before.hand[i][j];
             before.discardCount[i]++;
             before.hand[i][j] = -1;
@@ -152,13 +159,14 @@ int testCard(int choice1, int choice2, int player, int handpos, struct gameState
           for (int j = 0; j < 4; j++){
             before.hand[i][before.handCount[i]] = before.deck[i][before.deckCount[i] - 1];
             before.deckCount[i]--;
+			before.handCount[i]++;
           }
         }
         else {
           before.discardCount[i] = 0;
           before.handCount[i] = 4;
+		  before.deckCount[player] = after->deckCount[player];
           memcpy(before.hand[i], after->hand[i], sizeof(int) * before.handCount[i]);
-          memcpy(before.deckCount[i], after->deckCount[i], sizeof(int));
           memcpy(before.deck[i], after->deck[i], sizeof(int) * before.deckCount[i]);
         }
       }
@@ -172,72 +180,71 @@ int testCard(int choice1, int choice2, int player, int handpos, struct gameState
   if (memcmp(&before, after, sizeof(struct gameState)) == 0){
     printf("Random Test PASSED\n");
   } else {
-    printf("Random Test FAILED (choice1 = %d, choice2 = %d)\n", choice1, choice2);
+    printf("Random Test FAILED (choice1 = %d, choice2 = %d, player count = %d)\n", choice1, choice2, before.numPlayers);
     printParams(player, &before, after);
   }
 
+	return 0;
 }
 
 int main(){
-  /* Parameters used in Minion:
-   * 1)  choice1 - determines if player wants +2 coins
-   * 2)  choice2 - determines if player wants to discard hand and redraw 4
-   * 3)  valid player choice
-   * 4)  valid hand position
-   * 4)  valid game state
 
-   * Variables changed within function:
-   * 1)  numActions
-   * 2)  coins
-   * 3)  discard count/content
-   * 4)  hand count/content
-   * 5)  deck count/content
-  */
+	/* Parameters used in minion:
+	 * 1) choice1 - determines if player wants +2 coins
+	 * 2) choice2 - determines if player wants to discard hand redraw 4
+	 * 3) valid player choice
+	 * 4) valid hand position
+	 * 5) valid game state
+	 *
+	 * Variables changed within function:
+	 * 1) numActions
+	 * 2) coins
+	 * 3) discard count/content
+	 * 4) hand count/content
+	 * 5) deck count/content
+	 */
 
-  printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
+	printf("------------------ TESTING CARD:  %s ------------------\n", TESTCARD);
 
-  struct gameState state;
-  int player = 0, choice1 = 0, choice2 = 0, choice3 = 0, handpos = 0, bonus = 0;
-  SelectStream(2);
-  PutSeed(500);
+	struct gameState state;
+	int player = 0, choice1 = 0, choice2 = 0, handpos = 0;
+	SelectStream(2);
+	PutSeed(500);
 
-  for (int i = 0; i < MAX_TESTS; i++){
-    // Put random values into the game state
-    for (int j = 0; j < sizeof(struct gameState); j++){
-      ((char*)&state)[j] = floor(Random() * 256);
-    }
-    state.whoseTurn = player;
-    state.numPlayers = floor((Random() * 3) + 2);
-    player = floor(Random() * state.numPlayers);
-    choice1 = floor(Random() * 2);
-    choice2 = floor(Random() * 2);
-    state.deckCount[player] = floor(Random() * MAX_DECK);
-    state.handCount[player] = floor(Random() * MAX_HAND);
-    state.discardCount[player] = floor(Random() * MAX_DECK);
-    state.coins = floor(Random() * 10);
-    state.numActions = floor(Random() * 10);
-    handpos = floor(Random() * state.handCount[player]);
+	for (int i = 0; i < MAX_TESTS; i++){
+		// Put random values into game state
+		for (int j = 0; j < sizeof(struct gameState); j++){
+			((char*)&state)[j] = floor(Random() * 256);
+		}
+		state.numPlayers = floor((Random() * 3) + 2);
+		player = floor(Random() * state.numPlayers);
+		state.whoseTurn = player;
+		choice1 = floor(Random() * 2);
+		choice2 = floor(Random() * 2);
+		state.playedCardCount = 0;
+		state.coins = floor(Random() * 10);
+		state.numActions = floor(Random() * 10);
 
-    // Populate all players' hands
-    for (int k = 0; k < state.numPlayers; k++){
-      // Populate hand randomly
-    	for (int x = 0; x < state.handCount[player]; x++){
-    		state.hand[k][x] = floor(Random() * (treasure_map + 1));
-    	}
+		// Populate all players' hands
+		for (int k = 0; k < state.numPlayers; k++){
+			state.deckCount[k] = floor(Random() * MAX_DECK);
+			state.handCount[k] = floor(Random() * MAX_HAND);
+			state.discardCount[k] = floor(Random() * MAX_DECK);
 
-    	// Populate deck randomly
-    	for (int x = 0; x < state.deckCount[player]; x++){
-    		state.deck[k][x] = floor(Random() * (treasure_map + 1));
-    	}
+			for (int x = 0; x < state.deckCount[k]; x++){
+				state.deck[k][x] = floor(Random() * (treasure_map + 1));
+			}
+			for (int x = 0; x < state.handCount[k]; x++){
+				state.hand[k][x] = floor(Random() * (treasure_map + 1));
+			}
+			for (int x = 0; x < state.discardCount[k]; x++){
+				state.discard[k][x] = floor(Random() * (treasure_map + 1));
+			}
+		}
+		handpos = floor(Random() * state.handCount[player]);
 
-    	// Populate discard randomly
-    	for (int x = 0; x < state.discardCount[player]; x++){
-    		state.discard[k][x] = floor(Random() * (treasure_map + 1));
-    	}
-    }
-
-    testCard(choice1, choice2, player, handpos, &state);
-  }
-
-  return 0;
+		testCard(choice1, choice2, player, handpos, &state);
+	}
+	return 0;
 }
+
