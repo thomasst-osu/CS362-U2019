@@ -13,9 +13,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define TESTCARD "Tribute"
-#define MAX_TESTS 5000
+#define MAX_TESTS 25000
 
 /* BUSINESS REQUIREMENTS:  TRIBUTE *********************************
 1)  Player after current player must reveal top 2 cards from hand
@@ -51,12 +52,15 @@ int printParams(int player, int nextPlayer, struct gameState *before, struct gam
   if (after->discardCount[nextPlayer] != before->discardCount[nextPlayer]){
     printf("\tNext Player Discard Count = %d, expected %d\n", after->discardCount[nextPlayer], before->discardCount[nextPlayer]);
   }
+
+  return 0;
 }
 
 int testCard(int player, struct gameState *after){
   int choice1 = 0, choice2 = 0, choice3 = 0, handpos = 0, bonus = 0;
-  struct gameState before;
+  struct gameState before, beforeCopy;
   memcpy(&before, after, sizeof(struct gameState));
+  memcpy(&beforeCopy, after, sizeof(struct gameState));
 
   cardEffect(tribute, choice1, choice2, choice3, after, handpos, &bonus);
 
@@ -72,7 +76,7 @@ int testCard(int player, struct gameState *after){
     tributeCards[0] = before.deck[nextPlayer][before.deckCount[nextPlayer] - 1];
     before.deck[nextPlayer][before.deckCount[nextPlayer] - 1] = -1;
     before.deckCount[nextPlayer]--;
-    tributeCards[1] = before.deck[nextPlayer][before.deckCount[nextPlayer] - 2];
+    tributeCards[1] = before.deck[nextPlayer][before.deckCount[nextPlayer] - 1];
     before.deck[nextPlayer][before.deckCount[nextPlayer] - 1] = -1;
     before.deckCount[nextPlayer]--;
     before.discard[nextPlayer][before.discardCount[nextPlayer]] = tributeCards[0];
@@ -112,23 +116,25 @@ int testCard(int player, struct gameState *after){
 
   for (int i = 0; i < 2; i++){
     if (tributeCards[i] == copper || tributeCards[i] == silver || tributeCards[i] == gold){
-      before.coins += 2;
+      before.coins = before.coins + 2;
     }
-    else if (tributeCards[i] == estate || tributeCards[i] == duchy || tributeCards[i] == province){
-      before.handCount[player] += 2;
-      before.deckCount[player] -= 2;
+    else if (tributeCards[i] == estate || tributeCards[i] == duchy || tributeCards[i] == province || tributeCards[i] == gardens || tributeCards[i] == great_hall){
+      before.handCount[player] = before.handCount[player] + 2;
+      before.deckCount[player] = before.deckCount[player] - 2;
     }
     else if (tributeCards[i] >= adventurer && tributeCards[i] <= treasure_map){
-      before.numActions += 2;
+      before.numActions = before.numActions + 2;
     }
   }
 
   if (memcmp(&before, after, sizeof(struct gameState)) == 0){
     printf("Random Test PASSED\n");
   } else {
-    printf("Random Test FAILED\n");
+    printf("Random Test FAILED (next player deck = %d, next player discard = %d)\n", beforeCopy.deckCount[nextPlayer], beforeCopy.discardCount[nextPlayer]);
     printParams(player, nextPlayer, &before, after);
   }
+
+  return 0;
 }
 
 int main(){
@@ -150,7 +156,7 @@ int main(){
   printf("---------------- TESTING CARD:  %s ----------------\n", TESTCARD);
 
   struct gameState state;
-  int player = 0, choice1 = 0, choice2 = 0, choice3 = 0, handpos = 0, bonus = 0;
+  int player = 0;
   SelectStream(2);
   PutSeed(500);
 
@@ -164,6 +170,7 @@ int main(){
     state.whoseTurn = player;
     state.numActions = floor(Random() * 10);
     state.coins = floor(Random() * 10);
+	state.playedCardCount = 0;
 
     // Populate all players' hands
 		for (int k = 0; k < state.numPlayers; k++){
