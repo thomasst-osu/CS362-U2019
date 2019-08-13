@@ -32,10 +32,43 @@ public class UrlValidatorTest extends TestCase {
    }
 
    @Override
-protected void setUp() {
+   protected void setUp() {
       for (int index = 0; index < testPartsIndex.length - 1; index++) {
          testPartsIndex[index] = 0;
       }
+   }
+
+   /**
+    * Set of random tests that focuses on the isValidScheme function in UrlValidator.java.
+    * The random testing procedure sends no parameters to the UrlValidator constructor
+    * indicating that it should take the default schemes available and test whether
+    * the passed in scheme (passed into urlVal.isValidScheme) is valid or not.
+
+    * To narrow down the possibility space, the letters f through t are used as this
+    * is the range of characters in a valid scheme.  850,000 test cases are run which
+    * should catch any issues in 5 letter long schemes (https).  This test has been
+    * run with the student incurred bug in UrlValidator and has caught the bug within
+    * 10,000 cases every time.
+    *
+    */
+   public void testRandom() {
+	   UrlValidator urlVal = new UrlValidator();
+	   int testCases = 850000;
+	   for (int schemeLength = 1; schemeLength < 7; schemeLength++) {
+		   for (int x = 1; x < testCases; x++) {
+			   StringBuilder testBuffer = new StringBuilder();
+			   for (int i = 0; i < schemeLength; i++) {
+				   Random random = new Random();
+				   int ch = random.nextInt((116 - 102) + 1) + 102;
+				   char ascii = (char) ch;
+				   testBuffer.append(ascii);
+			   }
+			   String scheme = testBuffer.toString();
+			   boolean randResult = ((scheme.compareTo("ftp") == 0) | (scheme.compareTo("http") == 0) | (scheme.compareTo("https") == 0));
+			   boolean testResult = urlVal.isValidScheme(scheme);
+			   assertEquals(scheme, randResult, testResult);
+		   }
+	   }
    }
 
    public void testIsValid() {
